@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>three</title>
+    <script src="../../dist/thes.min.js"></script>
+  </head>
+  <body>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script>
+      new thes({
+        el: document.body,
+        view: 800,
+        camera: {
+          type: 'OrthographicCamera',
+          position: {
+            x: 200,
+            y: 300,
+            z: 200,
+          },
+          OrthographicCameraOption: {
+            near: 1,
+            far: 1000,
+          },
+        },
+        width: window?.innerWidth || 1000,
+        height: window?.innerHeight || 1000,
+        lights: {
+          type: 'PointLight',
+          position: {
+            x: 400,
+            y: 200,
+            z: 300,
+          },
+        },
+        ambientLight: {
+          color: 'rgb(0,144,144)',
+        },
+        background: 'rgb(120,187,255)',
+      });
+    </script>
+  </body>
+</html>
