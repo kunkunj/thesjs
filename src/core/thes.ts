@@ -25,6 +25,7 @@ export class Thes implements ThesContainer {
   control: ThreeConstruct.Controls;
   models = [];
   constructor(opt: optionsType) {
+    //提交测试
     //赋值id
     setId('scene', this);
     // this.id =
