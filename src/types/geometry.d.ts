@@ -140,6 +140,21 @@ export type SphereGeometryType = {
   thetaLength?: number;
 };
 /**
+ * 材质参数
+ * color -- 颜色
+ * envMap -- 环境贴图
+ * fog -- 材质是否受雾影响
+ * map -- 颜色贴图
+ * wireframe -- 线框模式
+ */
+export type MaterialType = {
+  color?: ThreeConstruct.Color;
+  envMap?: ThreeConstruct.Texture;
+  fog?: boolean;
+  map?: ThreeConstruct.Texture;
+  wireframe?: boolean;
+};
+/**
  * geometry -- 几何体类型
  * BoxGeometryOption -- 正方体参数
  * CircleGeometryOption -- 平面圆参数
@@ -148,6 +163,8 @@ export type SphereGeometryType = {
 export type GeometryOptionType = {
   geometry: GeometryList;
   material: MaterialList;
+  position: number[];
+  materialOption?: MaterialType;
   BoxGeometryOption?: BoxGeometryType;
   CircleGeometryOption?: CircleGeometryType;
   ConeGeometryOption?: ConeGeometryType;
@@ -167,5 +184,15 @@ export type GeometryType = {
  */
 export interface GeometryContainer {
   id: number;
-  opt: GeometryType;
+  content: ThreeConstruct.Mesh;
+  opt: GeometryOptionType;
+  setColor(color: ThreeConstruct.Color): void;
 }
+/**
+ *
+ */
+export type ContentType = {
+  thing: ThreeConstruct.Mesh;
+  geo: ThreeConstruct.Geometry;
+  mat: ThreeConstruct.Material;
+};

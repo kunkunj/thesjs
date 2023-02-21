@@ -1,4 +1,5 @@
 import CreateThree from '../../common/three';
+import Tween from '@tweenjs/tween.js';
 /// <reference path="./threeType/ThreeConstruct.d.ts" />
 export default (
   el: Element,
@@ -11,6 +12,7 @@ export default (
   renderer.setSize(width, height);
   el.appendChild(renderer.domElement);
   function render() {
+    Tween.update();
     renderer.render(scene, camera);
     requestAnimationFrame(render);
   }

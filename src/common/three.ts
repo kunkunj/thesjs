@@ -37,10 +37,16 @@ const createOrbitControls = (...arg: any) => new OrbitControls(...arg);
 const createGroup= () => new THREE.Group();
 const createMa = (scene: any) => {
   const geometry = new THREE.PlaneGeometry(100, 100,2,2);
-  const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
+  const material = new THREE.MeshBasicMaterial({ color: createColor('rgb(255,255,255)'), side: THREE.DoubleSide });
   const plane = new THREE.Mesh(geometry, material);
   scene.add(plane);
 };
+//正方体
+const createBoxGeometry = (...arg: any) => new THREE.BoxGeometry(...arg);
+//基础材质
+const createMeshBasicMaterial = (...arg: any) => new THREE.MeshBasicMaterial(...arg);
+//mesh
+const createMesh  = (...arg: any) => new THREE.Mesh(...arg);
 export default {
   THREE,
   createScene,
@@ -58,4 +64,7 @@ export default {
   createMa,
   createOrbitControls,
   createGroup,
+  createBoxGeometry,
+  createMeshBasicMaterial,
+  createMesh
 };

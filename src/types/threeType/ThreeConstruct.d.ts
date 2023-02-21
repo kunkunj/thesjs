@@ -25,4 +25,5 @@ namespace ThreeConstruct {
   export type Group = any
   //几何体
   export type Geometry = any
+  export type Mesh = any
 }

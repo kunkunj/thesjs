@@ -3,7 +3,7 @@ import CreateThree from '../common/three';
 import { CameraType, optionsType, PointType, AmbientType } from '../types/options';
 import { defaultCamera, defaultLight, defaultAmbient } from '../data/option';
 import { ThesContainer } from '../types/thesFull';
-import { GeometryType } from '../types/geometry';
+import { GeometryOptionType, GeometryContainer } from '../types/geometry';
 import { setId } from '../common/utils';
 import OptionFilter from '../common/optionFilter';
 import CreateCamera from './converter/camera';
@@ -14,7 +14,7 @@ import CreateAmbient from './converter/ambient';
 import CreateControl from './converter/control';
 import CreateGeometry from './geometry';
 import CreateGroup from './group';
-import ThesSet from './default/index'
+import ThesSet from './default/index';
 //场景主函数
 export class Thes implements ThesContainer {
   id = -1;
@@ -49,7 +49,7 @@ export class Thes implements ThesContainer {
     this.light = CreateLight(this.opt.lights as PointType, this.scene);
     //创建环境光
     this.ambient = CreateAmbient(this.opt.ambientLight, this.scene);
-    CreateThree.createMa(this.scene);
+    // CreateThree.createMa(this.scene);
     //构造器
     this.renderer = CreateRenderer(
       this.opt.el,
@@ -60,14 +60,14 @@ export class Thes implements ThesContainer {
     );
     this.control = CreateControl(this.camera, this.renderer);
   }
-  static createGeometry(geometry: GeometryType) {
+  static createGeometry(geometry: GeometryOptionType) {
     return new CreateGeometry(geometry);
   }
   static createGroup() {
     return CreateGroup();
   }
-  add(me: ThreeConstruct.Group | ThreeConstruct.Geometry) {
-    this.scene.add(me);
+  add(me: GeometryContainer) {
+    this.scene.add(me.content.thing);
   }
   clear(): void {
     this.opt.el.innerHTML = '';

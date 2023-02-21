@@ -1,4 +1,5 @@
 import idStorage from '../common/map';
+/// <reference path="./threeType/ThreeConstruct.d.ts" />
 //16进制转换
 export function octalReplace(str: string): string {
   return str.replace('#', '0x');
@@ -15,4 +16,10 @@ export function setId(type: string, the: any) {
     the.id = 1;
   }
   idStorage.setById(type, the.id + 1);
+}
+//继承
+export function extendParent(props: string[], the: any, geo: ThreeConstruct.Geometry) {
+  props.map(item => {
+    the[item] = the[item] ? the[item] : geo[item];
+  });
 }
