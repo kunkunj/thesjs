@@ -1,6 +1,7 @@
 /// <reference path="../types/threeType/ThreeConstruct.ts" />
 import CreateThree from '../common/three';
-import { optionsType } from '../types/options';
+import { CameraType, optionsType, PointType, AmbientType } from '../types/options';
+import { defaultCamera, defaultLight, defaultAmbient } from '../data/option';
 import { ThesContainer } from '../types/thesFull';
 import { GeometryType } from '../types/geometry';
 import { setId } from '../common/utils';
@@ -13,6 +14,7 @@ import CreateAmbient from './converter/ambient';
 import CreateControl from './converter/control';
 import CreateGeometry from './geometry';
 import CreateGroup from './group';
+import ThesSet from './default/index'
 //场景主函数
 export class Thes implements ThesContainer {
   id = -1;
@@ -23,9 +25,11 @@ export class Thes implements ThesContainer {
   light: ThreeConstruct.Light;
   ambient: ThreeConstruct.AmbientLight;
   control: ThreeConstruct.Controls;
+  static getDefaultCameraOptions: CameraType = defaultCamera;
+  static getDefaultLightOptions: PointType = defaultLight;
+  static getDefaultAmbientOptions: AmbientType = defaultAmbient;
   models = [];
   constructor(opt: optionsType) {
-    //提交测试
     //赋值id
     setId('scene', this);
     // this.id =
@@ -42,7 +46,7 @@ export class Thes implements ThesContainer {
       this.opt.view
     );
     //创建光源
-    this.light = CreateLight(this.opt.lights, this.scene);
+    this.light = CreateLight(this.opt.lights as PointType, this.scene);
     //创建环境光
     this.ambient = CreateAmbient(this.opt.ambientLight, this.scene);
     CreateThree.createMa(this.scene);

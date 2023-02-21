@@ -150,7 +150,7 @@ export type optionsType = {
   camera: CameraType;
   width: number;
   height: number;
-  lights: PointType;
+  lights?: PointType;
   ambientLight: AmbientType;
   background?: ThreeConstruct.Color | ThreeConstruct.CubeTexture | ThreeConstruct.Texture;
   backgroundBlurriness?: number;

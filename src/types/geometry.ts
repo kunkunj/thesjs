@@ -1,4 +1,17 @@
 /// <reference path="./threeType/ThreeConstruct.ts" />
+/**---------------------------------材质相关--------------------------------------- */
+/**
+ * MeshBasicMaterial -- 基础网格材质，不受光照影响的材质
+ * MeshLambertMaterial -- Lambert网格材质，与光照有反应，漫反射
+ * MeshPhongMaterial -- 高光Phong材质,与光照有反应
+ * MeshStandardMaterial -- PBR物理材质，相比较高光Phong材质可以更好的模拟金属、玻璃等效果
+ */
+export type MaterialList =
+  | 'MeshBasicMaterial'
+  | 'MeshLambertMaterial'
+  | 'MeshPhongMaterial'
+  | 'MeshStandardMaterial';
+
 /**
  * 所有模型类型
  * geometry -- 几何体
@@ -134,6 +147,7 @@ export type SphereGeometryType = {
  */
 export type GeometryOptionType = {
   geometry: GeometryList;
+  material: MaterialList;
   BoxGeometryOption?: BoxGeometryType;
   CircleGeometryOption?: CircleGeometryType;
   ConeGeometryOption?: ConeGeometryType;

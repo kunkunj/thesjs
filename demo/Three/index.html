@@ -15,33 +15,15 @@
       }
     </style>
     <script>
-      new thes({
+      new Thes({
         el: document.body,
         view: 800,
-        camera: {
-          type: 'OrthographicCamera',
-          position: {
-            x: 200,
-            y: 300,
-            z: 200,
-          },
-          OrthographicCameraOption: {
-            near: 1,
-            far: 1000,
-          },
-        },
+        camera: Thes.getDefaultCameraOptions,
         width: window?.innerWidth || 1000,
         height: window?.innerHeight || 1000,
-        lights: {
-          type: 'PointLight',
-          position: {
-            x: 400,
-            y: 200,
-            z: 300,
-          },
-        },
+        lights: Thes.getDefaultLightOptions, 
         ambientLight: {
-          color: 'rgb(0,144,144)',
+          color: 'rgb(255,255,255)',
         },
         background: 'rgb(120,187,255)',
       });
