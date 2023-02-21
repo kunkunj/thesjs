@@ -1,4 +1,4 @@
-/// <reference path="../types/threeType/ThreeConstruct.ts" />
+/// <reference path="../types/threeType/ThreeConstruct.d.ts" />
 import CreateThree from '../common/three';
 import { CameraType, optionsType, PointType, AmbientType } from '../types/options';
 import { defaultCamera, defaultLight, defaultAmbient } from '../data/option';

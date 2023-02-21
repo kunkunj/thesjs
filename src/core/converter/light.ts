@@ -1,6 +1,6 @@
 import { PointType } from '../../types/options';
 import CreateThree from '../../common/three';
-/// <reference path="./threeType/ThreeConstruct.ts" />
+/// <reference path="./threeType/ThreeConstruct.d.ts" />
 
 export default (lig: PointType, scene: ThreeConstruct.Scene): ThreeConstruct.Camera => {
   let light: ThreeConstruct.Light;

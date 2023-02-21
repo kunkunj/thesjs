@@ -1,5 +1,5 @@
 import CreateThree from '../../common/three';
-/// <reference path="./threeType/ThreeConstruct.ts" />
+/// <reference path="./threeType/ThreeConstruct.d.ts" />
 export default (
   el: Element,
   width: number,
