@@ -1,21 +1,71 @@
 import CreateThree from '../../common/three';
-import { GeometryOptionType } from '../../types/geometry';
+import { GeometryOptionType, MaterialType } from '../../types/geometry';
 import { throwError } from '../../common/utils';
+import { isArray, isObject } from 'loadsh';
 /// <reference path="./threeType/ThreeConstruct.d.ts" />
 export const createGeofn: ThreeConstruct.Geometry = (opt: GeometryOptionType) => {
   let geo: ThreeConstruct.Geometry;
   switch (opt.geometry) {
     case 'BoxGeometry':
       geo = CreateThree.createBoxGeometry(
-        opt?.BoxGeometryOption?.width || 10,
-        opt?.BoxGeometryOption?.height || 10,
-        opt?.BoxGeometryOption?.depth || 10,
-        opt?.BoxGeometryOption?.widthSegments || 1,
-        opt?.BoxGeometryOption?.heightSegments || 1,
-        opt?.BoxGeometryOption?.depthSegments || 1
+        opt?.geometryOption?.width || 10,
+        opt?.geometryOption?.height || 10,
+        opt?.geometryOption?.depth || 10,
+        opt?.geometryOption?.widthSegments || 1,
+        opt?.geometryOption?.heightSegments || 1,
+        opt?.geometryOption?.depthSegments || 1
       );
       break;
-
+    case 'CircleGeometry':
+      geo = CreateThree.createCircleGeometry(
+        opt?.geometryOption?.radius || 10,
+        opt?.geometryOption?.segments || 10,
+        opt?.geometryOption?.thetaStart || 0,
+        opt?.geometryOption?.thetaLength || 2 * Math.PI
+      );
+      break;
+    case 'ConeGeometry':
+      geo = CreateThree.createConeGeometry(
+        opt?.geometryOption?.radius || 10,
+        opt?.geometryOption?.height || 10,
+        opt?.geometryOption?.radialSegments || 32,
+        opt?.geometryOption?.heightSegments || 1,
+        opt?.geometryOption?.openEnded || false,
+        opt?.geometryOption?.thetaStart || 0,
+        opt?.geometryOption?.thetaLength || 2 * Math.PI
+      );
+      break;
+    case 'CylinderGeometry':
+      geo = CreateThree.createCylinderGeometry(
+        opt?.geometryOption?.radiusTop || 10,
+        opt?.geometryOption?.radiusBottom || 10,
+        opt?.geometryOption?.height || 32,
+        opt?.geometryOption?.radialSegments || 32,
+        opt?.geometryOption?.heightSegments || 1,
+        opt?.geometryOption?.openEnded || false,
+        opt?.geometryOption?.thetaStart || 0,
+        opt?.geometryOption?.thetaLength || 2 * Math.PI
+      );
+      break;
+    case 'PlaneGeometry':
+      geo = CreateThree.createPlaneGeometry(
+        opt?.geometryOption?.width || 10,
+        opt?.geometryOption?.height || 10,
+        opt?.geometryOption?.widthSegments || 1,
+        opt?.geometryOption?.heightSegments || 1
+      );
+      break;
+    case 'SphereGeometry':
+      geo = CreateThree.createSphereGeometry(
+        opt?.geometryOption?.radius || 10,
+        opt?.geometryOption?.widthSegments  || 32,
+        opt?.geometryOption?.heightSegments || 16,
+        opt?.geometryOption?.phiStart || 0,
+        opt?.geometryOption?.phiLength  || 2 * Math.PI,
+        opt?.geometryOption?.thetaStart || 0,
+        opt?.geometryOption?.thetaLength || 2 * Math.PI
+      );
+      break;
     default:
       throwError(`无“${opt.geometry}”该类型`);
       break;
@@ -26,10 +76,24 @@ export const createMaFn: ThreeConstruct.Material = (opt: GeometryOptionType) => 
   let mat: ThreeConstruct.Material;
   switch (opt.material) {
     case 'MeshBasicMaterial':
-      mat = CreateThree.createMeshBasicMaterial({
-        ...opt.materialOption,
-        color: CreateThree.createColor(opt?.materialOption?.color || 'rgb(255,255,255)'),
-      });
+      if (isObject(opt.materialOption)) {
+        mat = CreateThree.createMeshBasicMaterial({
+          ...opt.materialOption,
+          color: CreateThree.createColor(
+            (opt?.materialOption as MaterialType)?.color || 'rgb(255,255,255)'
+          ),
+          side: CreateThree.getSlide(),
+        });
+      }
+      if (isArray(opt.materialOption)) {
+        mat = opt.materialOption?.map((item: MaterialType) => {
+          return CreateThree.createMeshBasicMaterial({
+            ...item,
+            color: CreateThree.createColor(item?.color || 'rgb(255,255,255)'),
+            side: CreateThree.getSlide(),
+          });
+        });
+      }
       break;
 
     default:

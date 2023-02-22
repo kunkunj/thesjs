@@ -15,6 +15,8 @@ import CreateControl from './converter/control';
 import CreateGeometry from './geometry';
 import CreateGroup from './group';
 import ThesSet from './default/index';
+import { uniqBy, isArray } from 'loadsh';
+type eventsType = { [key in 'click' | 'move' | 'leave']: 'on' | 'off' };
 //场景主函数
 export class Thes implements ThesContainer {
   id = -1;
@@ -29,6 +31,11 @@ export class Thes implements ThesContainer {
   static getDefaultLightOptions: PointType = defaultLight;
   static getDefaultAmbientOptions: AmbientType = defaultAmbient;
   models = [];
+  events: eventsType = {
+    click: 'off',
+    move: 'off',
+    leave: 'off',
+  };
   constructor(opt: optionsType) {
     //赋值id
     setId('scene', this);
@@ -68,6 +75,31 @@ export class Thes implements ThesContainer {
   }
   add(me: GeometryContainer) {
     this.scene.add(me.content.thing);
+  }
+  on(type: keyof eventsType, cb: Function) {
+    switch (type) {
+      case 'click':
+        if (this.events[type] == 'off') {
+          this.opt.el.addEventListener('click', event =>
+            cb(
+              isArray(CreateThree.getModelList(event, this.camera, this.scene))
+                ? uniqBy(CreateThree.getModelList(event, this.camera, this.scene), 'uuid')
+                : []
+            )
+          );
+          this.events['click'] = 'on';
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
+  off(type: keyof eventsType) {
+    if (this.events[type] == 'on') {
+      this.opt.el.removeEventListener(type, () => {});
+      this.events[type] == 'off';
+    }
   }
   clear(): void {
     this.opt.el.innerHTML = '';

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 import { OrbitControls } from '../controls/OrbitControls.js';
 import { throwError } from './utils';
+
 //场景
 const createScene = () => new THREE.Scene();
 //点光源
@@ -34,19 +35,44 @@ const createAmbientLight = (...arg: any) => new THREE.AmbientLight(...arg);
 //控件对象
 const createOrbitControls = (...arg: any) => new OrbitControls(...arg);
 //创建组
-const createGroup= () => new THREE.Group();
+const createGroup = () => new THREE.Group();
 const createMa = (scene: any) => {
-  const geometry = new THREE.PlaneGeometry(100, 100,2,2);
-  const material = new THREE.MeshBasicMaterial({ color: createColor('rgb(255,255,255)'), side: THREE.DoubleSide });
+  const geometry = new THREE.PlaneGeometry(100, 100, 2, 2);
+  const material = new THREE.MeshBasicMaterial({
+    color: createColor('rgb(255,255,255)'),
+    side: THREE.DoubleSide,
+  });
   const plane = new THREE.Mesh(geometry, material);
   scene.add(plane);
 };
 //正方体
 const createBoxGeometry = (...arg: any) => new THREE.BoxGeometry(...arg);
+//平面圆
+const createCircleGeometry = (...arg: any) => new THREE.CircleGeometry(...arg);
+//圆锥
+const createConeGeometry = (...arg: any) => new THREE.ConeGeometry(...arg);
+//圆柱
+const createCylinderGeometry = (...arg: any) => new THREE.CylinderGeometry(...arg);
+//平面
+const createPlaneGeometry = (...arg: any) => new THREE.PlaneGeometry(...arg);
+//球
+const createSphereGeometry = (...arg: any) => new THREE.SphereGeometry(...arg);
 //基础材质
 const createMeshBasicMaterial = (...arg: any) => new THREE.MeshBasicMaterial(...arg);
 //mesh
-const createMesh  = (...arg: any) => new THREE.Mesh(...arg);
+const createMesh = (...arg: any) => new THREE.Mesh(...arg);
+const getSlide = () => THREE.DoubleSide;
+//获取点击模型列表
+const getModelList = (event: any, camera: any, scene: any) => {
+  event.preventDefault();
+  let rayCaster = new THREE.Raycaster();
+  let mouse = new THREE.Vector2();
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  rayCaster.setFromCamera(mouse, camera);
+  let intersects = rayCaster.intersectObjects(scene.children, true);
+  return intersects.map((item: any) => item.object);
+};
 export default {
   THREE,
   createScene,
@@ -66,5 +92,12 @@ export default {
   createGroup,
   createBoxGeometry,
   createMeshBasicMaterial,
-  createMesh
+  createMesh,
+  createCircleGeometry,
+  getSlide,
+  createConeGeometry,
+  createCylinderGeometry,
+  createPlaneGeometry,
+  createSphereGeometry,
+  getModelList,
 };

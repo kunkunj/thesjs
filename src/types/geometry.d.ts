@@ -62,7 +62,7 @@ export type BoxGeometryType = {
 export type CircleGeometryType = {
   radius: number;
   segments: number;
-  depthetaStartth: number;
+  thetaStart: number;
   thetaLength?: number;
 };
 /**
@@ -146,6 +146,7 @@ export type SphereGeometryType = {
  * fog -- 材质是否受雾影响
  * map -- 颜色贴图
  * wireframe -- 线框模式
+ * side -- 显示模式，MeshLambertMaterial有效
  */
 export type MaterialType = {
   color?: ThreeConstruct.Color;
@@ -164,13 +165,18 @@ export type GeometryOptionType = {
   geometry: GeometryList;
   material: MaterialList;
   position: number[];
-  materialOption?: MaterialType;
-  BoxGeometryOption?: BoxGeometryType;
-  CircleGeometryOption?: CircleGeometryType;
-  ConeGeometryOption?: ConeGeometryType;
-  CylinderGeometryOption?: CylinderGeometryType;
-  PlaneGeometryOption?: PlaneGeometryType;
-  SphereGeometryOption?: SphereGeometryType;
+  geometryOption?: BoxGeometryType &
+    CircleGeometryType &
+    CylinderGeometryType &
+    PlaneGeometryType &
+    SphereGeometryType;
+  materialOption?: MaterialType | MaterialType[];
+  // BoxGeometryOption?: BoxGeometryType;
+  // CircleGeometryOption?: CircleGeometryType;
+  // ConeGeometryOption?: ConeGeometryType;
+  // CylinderGeometryOption?: CylinderGeometryType;
+  // PlaneGeometryOption?: PlaneGeometryType;
+  // SphereGeometryOption?: SphereGeometryType;
 };
 /**
  * 新增参数类型
@@ -194,5 +200,5 @@ export interface GeometryContainer {
 export type ContentType = {
   thing: ThreeConstruct.Mesh;
   geo: ThreeConstruct.Geometry;
-  mat: ThreeConstruct.Material;
+  mat: ThreeConstruct.Material | ThreeConstruct.Material[];
 };
