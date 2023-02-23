@@ -58,10 +58,10 @@ export const createGeofn: ThreeConstruct.Geometry = (opt: GeometryOptionType) =>
     case 'SphereGeometry':
       geo = CreateThree.createSphereGeometry(
         opt?.geometryOption?.radius || 10,
-        opt?.geometryOption?.widthSegments  || 32,
+        opt?.geometryOption?.widthSegments || 32,
         opt?.geometryOption?.heightSegments || 16,
         opt?.geometryOption?.phiStart || 0,
-        opt?.geometryOption?.phiLength  || 2 * Math.PI,
+        opt?.geometryOption?.phiLength || 2 * Math.PI,
         opt?.geometryOption?.thetaStart || 0,
         opt?.geometryOption?.thetaLength || 2 * Math.PI
       );
@@ -77,20 +77,30 @@ export const createMaFn: ThreeConstruct.Material = (opt: GeometryOptionType) => 
   switch (opt.material) {
     case 'MeshBasicMaterial':
       if (isObject(opt.materialOption)) {
+        let map: ThreeConstruct.Texture;
+        if (opt.materialOption?.map) {
+          map = CreateThree.createTextureLoader(opt.materialOption?.map);
+        }
         mat = CreateThree.createMeshBasicMaterial({
           ...opt.materialOption,
           color: CreateThree.createColor(
             (opt?.materialOption as MaterialType)?.color || 'rgb(255,255,255)'
           ),
           side: CreateThree.getSlide(),
+          map: map,
         });
       }
       if (isArray(opt.materialOption)) {
         mat = opt.materialOption?.map((item: MaterialType) => {
+          let map: ThreeConstruct.Texture;
+          if (item?.map) {
+            map = CreateThree.createTextureLoader(opt.materialOption?.map);
+          }
           return CreateThree.createMeshBasicMaterial({
             ...item,
             color: CreateThree.createColor(item?.color || 'rgb(255,255,255)'),
             side: CreateThree.getSlide(),
+            map: map,
           });
         });
       }

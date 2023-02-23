@@ -11,11 +11,11 @@ export function throwError(str: string) {
 //赋值id
 export function setId(type: string, the: any) {
   if (idStorage.hasId(type)) {
-    the.id = idStorage.findById(type);
+    the.cid = idStorage.findById(type);
   } else {
-    the.id = 1;
+    the.cid = 1;
   }
-  idStorage.setById(type, the.id + 1);
+  idStorage.setById(type, the.cid + 1);
 }
 //继承
 export function extendParent(props: string[], the: any, geo: ThreeConstruct.Geometry) {

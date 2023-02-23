@@ -2,9 +2,9 @@
 import CreateThree from '../common/three';
 import { CameraType, optionsType, PointType, AmbientType } from '../types/options';
 import { defaultCamera, defaultLight, defaultAmbient } from '../data/option';
-import { ThesContainer } from '../types/thesFull';
+import { ThesContainer, SceneBoxType } from '../types/thesFull';
 import { GeometryOptionType, GeometryContainer } from '../types/geometry';
-import { setId } from '../common/utils';
+import { setId, throwError } from '../common/utils';
 import OptionFilter from '../common/optionFilter';
 import CreateCamera from './converter/camera';
 import CreateRenderer from './converter/renderer';
@@ -14,14 +14,17 @@ import CreateAmbient from './converter/ambient';
 import CreateControl from './converter/control';
 import CreateGeometry from './geometry';
 import CreateGroup from './group';
+import Tween from '@tweenjs/tween.js';
+import SceneBox from './sceneBox';
 import ThesSet from './default/index';
-import { uniqBy, isArray } from 'loadsh';
+import { uniqBy, isArray, isNumber } from 'loadsh';
 type eventsType = { [key in 'click' | 'move' | 'leave']: 'on' | 'off' };
 //场景主函数
 export class Thes implements ThesContainer {
   id = -1;
   opt: optionsType;
   scene: ThreeConstruct.Scene;
+  sceneBox: SceneBoxType;
   camera: ThreeConstruct.Camera;
   renderer: ThreeConstruct.Renderer;
   light: ThreeConstruct.Light;
@@ -31,6 +34,7 @@ export class Thes implements ThesContainer {
   static getDefaultLightOptions: PointType = defaultLight;
   static getDefaultAmbientOptions: AmbientType = defaultAmbient;
   models = [];
+  scenes: ThreeConstruct.Scene[] = [];
   events: eventsType = {
     click: 'off',
     move: 'off',
@@ -38,12 +42,15 @@ export class Thes implements ThesContainer {
   };
   constructor(opt: optionsType) {
     //赋值id
-    setId('scene', this);
     // this.id =
     //格式化数据
     this.opt = OptionFilter(opt);
+    this.sceneBox = this.createScene(this.opt);
+    this.useScene(this.sceneBox);
     //创建场景
-    this.scene = CreateScene(this.opt);
+    // this.scene = CreateScene(this.opt);
+    // setId('scene', this.scene);
+    // this.scenes.push(this.scene);
     //创建相机
     this.camera = CreateCamera(
       this.opt.camera,
@@ -53,9 +60,9 @@ export class Thes implements ThesContainer {
       this.opt.view
     );
     //创建光源
-    this.light = CreateLight(this.opt.lights as PointType, this.scene);
+    // this.light = CreateLight(this.opt.lights as PointType, this.scene);
     //创建环境光
-    this.ambient = CreateAmbient(this.opt.ambientLight, this.scene);
+    // this.ambient = CreateAmbient(this.opt.ambientLight, this.scene);
     // CreateThree.createMa(this.scene);
     //构造器
     this.renderer = CreateRenderer(
@@ -73,8 +80,71 @@ export class Thes implements ThesContainer {
   static createGroup() {
     return CreateGroup();
   }
-  add(me: GeometryContainer) {
-    this.scene.add(me.content.thing);
+  createScene(opt: optionsType) {
+    let aopt = OptionFilter(opt);
+    const scene = CreateScene(aopt);
+    CreateLight(aopt.lights as PointType, scene);
+    CreateAmbient(aopt.ambientLight, scene);
+    const sceneBox = new SceneBox(scene);
+    setId('scene', sceneBox);
+    sceneBox.name = opt.sceneName || 'scene' + scene.cid;
+    this.scenes.push(sceneBox);
+    console.log(sceneBox);
+    return sceneBox;
+  }
+  //使用场景
+  useScene(scene: ThreeConstruct.Scene) {
+    if (!scene && !scene.isObject3D) {
+      throwError('请输入正确的场景');
+    }
+    //第一次加载只设置场景
+    if (!this.scene) {
+      this.scene = scene.scene;
+      return;
+    }
+    //判断切换的是否是当前场景
+    if (this.scene.cid == scene.cid) {
+      return;
+    }
+    //切换重置场景
+    this.scene = scene.scene;
+    cancelAnimationFrame(this.renderer.aniID);
+    let _ = this;
+    console.log(this.scene, this.camera);
+    function render() {
+      Tween.update();
+      _.renderer.render(_.scene, _.camera);
+      _.renderer.aniID = requestAnimationFrame(render);
+    }
+    render();
+    // this.renderer.render(scene, camera);
+  }
+  add(me: GeometryContainer, sceneBoxId: number): boolean {
+    let bl: boolean = false;
+    if (!me) {
+      throwError('模型不可以为null');
+      return false;
+    }
+    if (!sceneBoxId && this.scenes.length == 1) {
+      this.scenes[0].scene.add(me.content.thing);
+      return true;
+    }
+    if (!sceneBoxId && this.scenes.length > 1) {
+      throwError('id不可以为null');
+      return false;
+    }
+    if (sceneBoxId && me) {
+      let scene: undefined | ThreeConstruct.Scene = this.scenes.find(
+        item => sceneBoxId == item.cid
+      );
+      if (!scene) {
+        throwError('没查到该id的模型');
+        return false;
+      }
+      scene.scene.add(me.content.thing);
+      return true;
+    }
+    return false;
   }
   on(type: keyof eventsType, cb: Function) {
     switch (type) {

@@ -28,6 +28,7 @@ export const defaultAmbient: AmbientType = {
 export const defaultOption: optionsType = {
   el: document.body,
   view: 200,
+  sceneName: '',
   camera: defaultCamera,
   width: window?.innerWidth || 1000,
   height: window?.innerHeight || 1000,

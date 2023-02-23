@@ -10,6 +10,8 @@ export default (
   view: number
 ): ThreeConstruct.Camera => {
   let camera: ThreeConstruct.Camera;
+  var k = width / height; //窗口宽高比
+  var s = view; //三维场景显示范围控制系数，系数越大，显示的范围越大
   switch (cra.type) {
     case 'CubeCamera':
       camera = CreateThree.createCubeCamera(
@@ -19,8 +21,6 @@ export default (
       );
       break;
     case 'OrthographicCamera':
-      var k = width / height; //窗口宽高比
-      var s = view; //三维场景显示范围控制系数，系数越大，显示的范围越大
       camera = CreateThree.createOrthographicCamera(
         -s * k,
         s * k,

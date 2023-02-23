@@ -38,18 +38,47 @@
     >
       销毁
     </div>
+    <!-- <div
+      style="position: absolute; top: 130px; cursor: pointer; border: 1px solid; left: 10px"
+      onclick="createScene()"
+    >
+      新增场景
+    </div> -->
+    <div
+      style="position: absolute; top: 130px; cursor: pointer; border: 1px solid; left: 10px"
+      onclick="inBox()"
+    >
+      进入盒子内部
+    </div>
     <script>
       const th = new Thes({
         el: document.body,
         view: 800,
-        camera: Thes.getDefaultCameraOptions,
+        sceneName: 'scene1111',
+        camera: {
+          type: 'PerspectiveCamera',
+          position: {
+            x: 200,
+            y: 300,
+            z: 200,
+          },
+          PerspectiveCameraOption: {
+            fov: 45,
+            aspectRatio: window?.innerWidth / window?.innerHeight,
+            near: 1,
+            far: 1000,
+          },
+        },
         width: window?.innerWidth || 1000,
         height: window?.innerHeight || 1000,
-        lights: Thes.getDefaultLightOptions,
-        ambientLight: {
-          color: 'rgb(255,255,255)',
-        },
-        background: 'rgb(120,187,255)',
+        background: [
+          '../assets/px.jpg',
+          '../assets/nx.jpg',
+          '../assets/py.jpg',
+          '../assets/ny.jpg',
+          '../assets/pz.jpg',
+          '../assets/nz.jpg',
+        ],
       });
 
       //单颜色正方体
@@ -123,7 +152,7 @@
             color: 'rgb(255,255,0)',
           },
           {
-            color: 'rgb(255,0,0)'
+            color: 'rgb(255,0,0)',
           },
           {
             color: 'rgb(255,0,255)',
@@ -195,8 +224,54 @@
               )},${Math.floor(Math.random() * 256)})`
           );
       }
-      function dispose(){
-        go2.delete()
+      function dispose() {
+        go2.delete();
+      }
+      function createScene() {
+        console.log(th);
+      }
+      function inBox() {
+        //创建盒子场景
+        const scene = th.createScene({
+          el: document.body,
+          view: 800,
+          camera: {
+            type: 'PerspectiveCamera',
+            position: {
+              x: 200,
+              y: 300,
+              z: 200,
+            },
+            PerspectiveCameraOption: {
+              fov: 45,
+              aspectRatio: window?.innerWidth / window?.innerHeight,
+              near: 1,
+              far: 1000,
+            },
+          },
+          width: window?.innerWidth || 1000,
+          height: window?.innerHeight || 1000,
+          background: [
+            '../assets/mb.jpg',
+            '../assets/mb.jpg',
+            '../assets/mb.jpg',
+            '../assets/mb.jpg',
+            '../assets/mb.jpg',
+            '../assets/mb.jpg',
+          ],
+        });
+        const geo1 = Thes.createGeometry({
+          geometry: 'BoxGeometry',
+          material: 'MeshBasicMaterial',
+          position: [0, 0, 0],
+          materialOption: {
+            color: 'rgb(255,0,0)',
+          },
+        });
+        scene.add(geo1);
+        //使用盒子场景
+        th.useScene(scene);
+        console.log(th, scene);
       }
       th.on('click', list => {
         console.log(list);

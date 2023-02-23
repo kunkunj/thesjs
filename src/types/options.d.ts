@@ -133,6 +133,7 @@ export type AmbientType = {
 /**
  * el -- 节点
  * view -- 视野宽广，越大视野越广，默认200
+ * sceneName -- 场景名称
  * camera -- 相机参数详见相机相关
  * width -- 宽
  * height -- 高
@@ -146,7 +147,8 @@ export type AmbientType = {
  */
 export type optionsType = {
   el: Element;
-  view:number,
+  view: number;
+  sceneName: any;
   camera: CameraType;
   width: number;
   height: number;

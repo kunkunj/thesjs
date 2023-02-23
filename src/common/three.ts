@@ -62,6 +62,10 @@ const createMeshBasicMaterial = (...arg: any) => new THREE.MeshBasicMaterial(...
 //mesh
 const createMesh = (...arg: any) => new THREE.Mesh(...arg);
 const getSlide = () => THREE.DoubleSide;
+//创建CubeTextureLoader
+const createCubeTextureLoader = (...arg: any) => new THREE.CubeTextureLoader().load(...arg);
+//创建TextureLoader
+const createTextureLoader = (...arg: any) => new THREE.TextureLoader().load(...arg);
 //获取点击模型列表
 const getModelList = (event: any, camera: any, scene: any) => {
   event.preventDefault();
@@ -100,4 +104,6 @@ export default {
   createPlaneGeometry,
   createSphereGeometry,
   getModelList,
+  createCubeTextureLoader,
+  createTextureLoader,
 };
