@@ -1,12 +1,12 @@
 {
   "name": "thesjs",
-  "version": "0.0.1-beta.2",
+  "version": "0.0.1-beta.3",
   "description": "",
   "main": "src/index.ts",
   "scripts": {
     "build": "rollup -c",
     "serve:three": "cross-env ENV=Three rollup -c -w",
-    "serve:gemetry": "cross-env ENV=Gemetry rollup -c -w",
+    "serve:geometry": "cross-env ENV=Gemetry rollup -c -w",
     "prettier": "prettier --write ."
   },
   "author": "lk",

@@ -3,6 +3,7 @@ import {
   GeometryContainer,
   ContentType,
   MaterialType,
+  TextGeometryType,
 } from '../types/geometry';
 import CreateThree from '../common/three';
 import { setId, extendParent, throwError } from '../common/utils';
@@ -13,15 +14,21 @@ import { isArray, isObject, isString } from 'loadsh';
 /// <reference path="../types/threeType/ThreeConstruct.ts" />
 export default class Geometry implements GeometryContainer {
   id = -1;
-  opt: GeometryOptionType;
+  opt: GeometryOptionType | undefined;
   content: ContentType;
   tween: any;
   static props = [];
-  constructor(opt: GeometryOptionType) {
+  constructor(opt: GeometryOptionType, geo?: ThreeConstruct.Geometry) {
+    console.log(geo);
     setId('geometry', this);
     this.opt = opt;
-    geometryInspect(opt);
-    const geometry = CreateGeometry(opt);
+    let geometry: ContentType;
+    if (typeof geo == 'undefined') {
+      geometryInspect(opt);
+      geometry = CreateGeometry(opt);
+    } else {
+      geometry = geo;
+    }
     this.content = geometry;
     this.content.thing.position.set(...opt.position);
     this.tween = new Tween.Tween(geometry.thing.position);
@@ -50,6 +57,6 @@ export default class Geometry implements GeometryContainer {
     this.setPosition([position.x, position.y, position.z]);
   }
   delete() {
-    this.content.thing.removeFromParent()
+    this.content.thing.removeFromParent();
   }
 }

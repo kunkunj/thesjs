@@ -34,7 +34,33 @@ export type GeometryList =
   | 'ConeGeometry'
   | 'CylinderGeometry'
   | 'PlaneGeometry'
-  | 'SphereGeometry';
+  | 'SphereGeometry'
+  // | 'TextGeometry';
+/**
+ * 文本
+ * content -- 内容
+ * font — THREE.Font的实例。
+ * size — Float。字体大小，默认值为100。
+ * height — Float。挤出文本的厚度。默认值为50。
+ * curveSegments — Integer。（表示文本的）曲线上点的数量。默认值为12。
+ * bevelEnabled — Boolean。是否开启斜角，默认为false。
+ * bevelThickness — Float。文本上斜角的深度，默认值为20。
+ * bevelSize — Float。斜角与原始文本轮廓之间的延伸距离。默认值为8。
+ * bevelSegments — Integer。斜角的分段数。默认值为3。
+ */
+export type TextGeometryType = {
+  content: string;
+  style?: {
+    font: ThreeConstruct.Font;
+    size?: number;
+    height?: number;
+    curveSegments?: number;
+    bevelEnabled?: boolean;
+    bevelThickness?: number;
+    bevelSize?: number;
+    bevelSegments?: number;
+  };
+};
 /**
  * 正方体参数
  * width — X轴上面的宽度，默认值为1。
@@ -169,7 +195,8 @@ export type GeometryOptionType = {
     CircleGeometryType &
     CylinderGeometryType &
     PlaneGeometryType &
-    SphereGeometryType;
+    SphereGeometryType &
+    TextGeometryType;
   materialOption?: MaterialType | MaterialType[];
   // BoxGeometryOption?: BoxGeometryType;
   // CircleGeometryOption?: CircleGeometryType;
@@ -191,7 +218,7 @@ export type GeometryType = {
 export interface GeometryContainer {
   id: number;
   content: ThreeConstruct.Mesh;
-  opt: GeometryOptionType;
+  opt: GeometryOptionType | undefined;
   setColor(color: ThreeConstruct.Color): void;
 }
 /**

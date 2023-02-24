@@ -13,5 +13,6 @@ export interface ThesContainer {
 export interface SceneBoxType {
   scene: ThreeConstruct.Scene;
   name: string;
+  cid: number;
   add(me: ThreeConstruct.Group | ThreeConstruct.Geometry): void;
 }

@@ -4,6 +4,7 @@ import { GeometryContainer } from '../types/geometry';
 export default class SceneBox implements SceneBoxType {
   scene: ThreeConstruct.Scene;
   name: string = '';
+  cid: number = -1;
   constructor(scene: ThreeConstruct.Scene) {
     this.scene = scene;
   }

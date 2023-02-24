@@ -3,7 +3,12 @@ import CreateThree from '../common/three';
 import { CameraType, optionsType, PointType, AmbientType } from '../types/options';
 import { defaultCamera, defaultLight, defaultAmbient } from '../data/option';
 import { ThesContainer, SceneBoxType } from '../types/thesFull';
-import { GeometryOptionType, GeometryContainer } from '../types/geometry';
+import {
+  GeometryOptionType,
+  GeometryContainer,
+  TextGeometryType,
+  ContentType,
+} from '../types/geometry';
 import { setId, throwError } from '../common/utils';
 import OptionFilter from '../common/optionFilter';
 import CreateCamera from './converter/camera';
@@ -18,6 +23,7 @@ import Tween from '@tweenjs/tween.js';
 import SceneBox from './sceneBox';
 import ThesSet from './default/index';
 import { uniqBy, isArray, isNumber } from 'loadsh';
+import { createMaFn } from './converter/geometry';
 type eventsType = { [key in 'click' | 'move' | 'leave']: 'on' | 'off' };
 //场景主函数
 export class Thes implements ThesContainer {
@@ -80,6 +86,20 @@ export class Thes implements ThesContainer {
   static createGroup() {
     return CreateGroup();
   }
+  static async createText(opt: TextGeometryType): Promise<ThreeConstruct.Geometry> {
+    const font = await CreateThree.creatFont(opt?.style?.font);
+    const mat = createMaFn(opt);
+    const geo = CreateThree.creatTextGeometry(opt?.content, {
+      ...opt?.style,
+      font: font,
+    });
+    //此处忽略类型是套用geometry封装流程
+    return new CreateGeometry(opt as any, {
+      mat,
+      geo,
+      thing: CreateThree.createMesh(geo, mat),
+    });
+  }
   createScene(opt: optionsType) {
     let aopt = OptionFilter(opt);
     const scene = CreateScene(aopt);
@@ -89,12 +109,11 @@ export class Thes implements ThesContainer {
     setId('scene', sceneBox);
     sceneBox.name = opt.sceneName || 'scene' + scene.cid;
     this.scenes.push(sceneBox);
-    console.log(sceneBox);
     return sceneBox;
   }
   //使用场景
-  useScene(scene: ThreeConstruct.Scene) {
-    if (!scene && !scene.isObject3D) {
+  useScene(scene: SceneBoxType) {
+    if (!scene || !scene.scene.isObject3D) {
       throwError('请输入正确的场景');
     }
     //第一次加载只设置场景
@@ -110,7 +129,6 @@ export class Thes implements ThesContainer {
     this.scene = scene.scene;
     cancelAnimationFrame(this.renderer.aniID);
     let _ = this;
-    console.log(this.scene, this.camera);
     function render() {
       Tween.update();
       _.renderer.render(_.scene, _.camera);

@@ -172,11 +172,30 @@
       const go6 = Thes.createGeometry({
         geometry: 'SphereGeometry',
         material: 'MeshBasicMaterial',
-        position: [-75, 0, 0],
         materialOption: {
           color: 'rgb(0,255,0)',
         },
+        position: [-75, 0, 0],
       });
+      const geo1 = Thes.createText({
+        content: '这里是文本',
+        style: {
+          font: '../fonts/STXinwei_Regular.json',
+          size: 12,
+          height: 1,
+        },
+        material: 'MeshBasicMaterial',
+        position: [0, 50, 0],
+        materialOption: {
+          color: 'rgb(0,0,0)',
+        },
+      }).then(res => {
+        console.log(res);
+        th.add(res, 1);
+      });
+      console.log(geo1);
+      // scene.add(geo1);
+      // th.add(geo1, 1);
       th.add(geo);
       th.add(go1);
       th.add(go2);
@@ -260,15 +279,7 @@
             '../assets/mb.jpg',
           ],
         });
-        const geo1 = Thes.createGeometry({
-          geometry: 'BoxGeometry',
-          material: 'MeshBasicMaterial',
-          position: [0, 0, 0],
-          materialOption: {
-            map: '../assets/mb.jpg',
-          },
-        });
-        scene.add(geo1);
+
         //使用盒子场景
         th.useScene(scene);
         console.log(th, scene);

@@ -2,6 +2,8 @@ import * as THREE from 'three';
 
 import { OrbitControls } from '../controls/OrbitControls.js';
 import { throwError } from './utils';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 
 //场景
 const createScene = () => new THREE.Scene();
@@ -57,6 +59,16 @@ const createCylinderGeometry = (...arg: any) => new THREE.CylinderGeometry(...ar
 const createPlaneGeometry = (...arg: any) => new THREE.PlaneGeometry(...arg);
 //球
 const createSphereGeometry = (...arg: any) => new THREE.SphereGeometry(...arg);
+//文本
+const creatTextGeometry = (...arg: any) => new TextGeometry(...arg);
+//字体
+const creatFont = (url: string) => {
+  return new Promise((resolve: Function) => {
+    new FontLoader().load(url, (font: ThreeConstruct.Font) => {
+      resolve(font);
+    });
+  });
+};
 //基础材质
 const createMeshBasicMaterial = (...arg: any) => new THREE.MeshBasicMaterial(...arg);
 //mesh
@@ -106,4 +118,6 @@ export default {
   getModelList,
   createCubeTextureLoader,
   createTextureLoader,
+  creatTextGeometry,
+  creatFont,
 };

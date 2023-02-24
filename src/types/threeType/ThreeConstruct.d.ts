@@ -26,4 +26,5 @@ namespace ThreeConstruct {
   //几何体
   export type Geometry = any
   export type Mesh = any
+  export type Font = any
 }
