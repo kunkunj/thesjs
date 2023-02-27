@@ -27,4 +27,5 @@ namespace ThreeConstruct {
   export type Geometry = any
   export type Mesh = any
   export type Font = any
+  export type Line = any
 }

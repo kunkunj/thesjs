@@ -34,8 +34,8 @@ export type GeometryList =
   | 'ConeGeometry'
   | 'CylinderGeometry'
   | 'PlaneGeometry'
-  | 'SphereGeometry'
-  // | 'TextGeometry';
+  | 'SphereGeometry';
+// | 'TextGeometry';
 /**
  * 文本
  * content -- 内容
@@ -61,6 +61,36 @@ export type TextGeometryType = {
     bevelSegments?: number;
   };
 };
+/**
+ * 虚线
+ * dashSize -- 虚线的大小，是指破折号和间隙之和。默认值为 3。
+ * gapSize -- 间隙的大小，默认值为 1。
+ * isLineDashedMaterial -- Read-only flag to check if a given object is of type LineDashedMaterial.
+ * scale -- 线条中虚线部分的占比。默认值为 1。
+ */
+export type DashedLine = {
+  dashSize?: number;
+  gapSize?: number;
+  isLineDashedMaterial?: boolean;
+  scale?: number;
+};
+/**
+ * 线条
+ * point -- 点数组，[[x,y,z],[x,y,z]]
+ * color -- 线颜色
+ * type -- 线类型 solid（实线）dashed（虚线）
+ * linewidth -- 线宽
+ * linecap -- 定义线两端的样式。可选值为 'butt', 'round' 和 'square'。
+ * linejoin -- 定义线连接节点的样式。可选值为 'round', 'bevel' 和 'miter'。默认值为 'round'。
+ */
+export type LineGeometryType = {
+  points: Array<[number, number, number]>;
+  type: 'solid' | 'dashed';
+  color: ThreeConstruct.Color;
+  linewidth?: number;
+  linecap?: 'butt' | 'round' | 'square';
+  linejoin?: 'round' | 'bevel' | 'miter';
+} & DashedLine;
 /**
  * 正方体参数
  * width — X轴上面的宽度，默认值为1。
@@ -217,7 +247,7 @@ export type GeometryType = {
  */
 export interface GeometryContainer {
   id: number;
-  content: ThreeConstruct.Mesh;
+  content: ContentType;
   opt: GeometryOptionType | undefined;
   setColor(color: ThreeConstruct.Color): void;
 }
@@ -225,7 +255,12 @@ export interface GeometryContainer {
  *
  */
 export type ContentType = {
-  thing: ThreeConstruct.Mesh;
+  thing: ThreeConstruct.Mesh | ThreeConstruct.Line;
   geo: ThreeConstruct.Geometry;
   mat: ThreeConstruct.Material | ThreeConstruct.Material[];
 };
+export type LineContainer = {
+  id: number;
+  content: ContentType;
+  opt: LineGeometryType | undefined;
+}

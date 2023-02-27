@@ -30,7 +30,7 @@ export default class Geometry implements GeometryContainer {
       geometry = geo;
     }
     this.content = geometry;
-    this.content.thing.position.set(...opt.position);
+    opt.position && this.content.thing.position.set(...opt.position);
     this.tween = new Tween.Tween(geometry.thing.position);
     extendParent(Geometry.props, this, geometry);
   }
@@ -56,7 +56,26 @@ export default class Geometry implements GeometryContainer {
     this.tween.to({ ...position }, time || 1000).start();
     this.setPosition([position.x, position.y, position.z]);
   }
+  scale(...arg: any): void {
+    this.content.geo.scale(...arg);
+  }
+  translate(...arg: any): void {
+    this.content.geo.translate(...arg);
+  }
+  rotateX(...arg: any): void {
+    this.content.geo.rotateX(...arg);
+  }
+  rotateY(...arg: any): void {
+    this.content.geo.rotateY(...arg);
+  }
+  center(): void{
+    this.content.geo.center();
+  }
+  rotateZ(...arg: any): void {
+    this.content.geo.rotateZ(...arg);
+  }
   delete() {
+    this.content.geo.dispose()
     this.content.thing.removeFromParent();
   }
 }

@@ -191,11 +191,19 @@
         },
       }).then(res => {
         console.log(res);
+        res.setColor('rgb(255,0,0)');
         th.add(res, 1);
       });
-      console.log(geo1);
-      // scene.add(geo1);
-      // th.add(geo1, 1);
+      const line = Thes.createLine({
+        points: [
+          [0, 30, 0],
+          [30, 30, 0],
+        ],
+        color: 'rgb(255,0,0)',
+      });
+      // console.log(line.content)
+      // line.content
+      th.add(line)
       th.add(geo);
       th.add(go1);
       th.add(go2);
@@ -212,6 +220,7 @@
         go4.setColor(getColor(3));
         go5.setColor(getColor(1)[0]);
         go6.setColor(getColor(1)[0]);
+        line.setColor(getColor(1)[0]);
       }
       //设置位置
       function setposition() {
@@ -222,6 +231,7 @@
         go4.setPosition([Math.random() * 200, 0, Math.random() * 200]);
         go5.setPosition([Math.random() * 200, 0, Math.random() * 200]);
         go6.setPosition([Math.random() * 200, 0, Math.random() * 200]);
+        line.setPosition([Math.random() * 200, 0, Math.random() * 200]);
       }
       //移动位置
       function moveto() {
@@ -232,6 +242,7 @@
         go4.moveTo({ x: Math.random() * 200, y: 0, z: Math.random() * 200 }, 1000);
         go5.moveTo({ x: Math.random() * 200, y: 0, z: Math.random() * 200 }, 1000);
         go6.moveTo({ x: Math.random() * 200, y: 0, z: Math.random() * 200 }, 1000);
+        line.moveTo({ x: Math.random() * 200, y: 0, z: Math.random() * 200 }, 1000);
       }
       function getColor(num) {
         return new Array(num)
@@ -244,7 +255,14 @@
           );
       }
       function dispose() {
+        geo.delete();
+        go1.delete();
         go2.delete();
+        go3.delete();
+        go4.delete();
+        go5.delete();
+        go6.delete();
+        line.delete();
       }
       function createScene() {
         console.log(th);

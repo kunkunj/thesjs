@@ -1,5 +1,5 @@
 import CreateThree from '../../common/three';
-import { GeometryOptionType, MaterialType } from '../../types/geometry';
+import { ContentType, GeometryOptionType, MaterialType } from '../../types/geometry';
 import { throwError } from '../../common/utils';
 import { isArray, isObject } from 'loadsh';
 /// <reference path="./threeType/ThreeConstruct.d.ts" />
@@ -112,7 +112,7 @@ export const createMaFn: ThreeConstruct.Material = (opt: GeometryOptionType) => 
   }
   return mat;
 };
-export default (opt: GeometryOptionType): ThreeConstruct.Mesh => {
+export default (opt: GeometryOptionType): ContentType => {
   const geo: ThreeConstruct.Geometry = createGeofn(opt);
   const mat: ThreeConstruct.Material = createMaFn(opt);
   return {

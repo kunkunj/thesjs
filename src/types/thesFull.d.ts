@@ -16,3 +16,6 @@ export interface SceneBoxType {
   cid: number;
   add(me: ThreeConstruct.Group | ThreeConstruct.Geometry): void;
 }
+export interface ParentType {
+  scale(th:ThesContainer,dir:[number,number,number]):void
+}

@@ -1,5 +1,6 @@
 /// <reference path="../types/threeType/ThreeConstruct.d.ts" />
 import CreateThree from '../common/three';
+import CreateLine from './converter/line';
 import { CameraType, optionsType, PointType, AmbientType } from '../types/options';
 import { defaultCamera, defaultLight, defaultAmbient } from '../data/option';
 import { ThesContainer, SceneBoxType } from '../types/thesFull';
@@ -8,6 +9,8 @@ import {
   GeometryContainer,
   TextGeometryType,
   ContentType,
+  LineGeometryType,
+  LineContainer,
 } from '../types/geometry';
 import { setId, throwError } from '../common/utils';
 import OptionFilter from '../common/optionFilter';
@@ -24,6 +27,7 @@ import SceneBox from './sceneBox';
 import ThesSet from './default/index';
 import { uniqBy, isArray, isNumber } from 'loadsh';
 import { createMaFn } from './converter/geometry';
+// import thesParent from '../common/thesParent';
 type eventsType = { [key in 'click' | 'move' | 'leave']: 'on' | 'off' };
 //场景主函数
 export class Thes implements ThesContainer {
@@ -41,6 +45,7 @@ export class Thes implements ThesContainer {
   static getDefaultAmbientOptions: AmbientType = defaultAmbient;
   models = [];
   scenes: ThreeConstruct.Scene[] = [];
+  props: Array<string> = ['scale'];
   events: eventsType = {
     click: 'off',
     move: 'off',
@@ -86,10 +91,11 @@ export class Thes implements ThesContainer {
   static createGroup() {
     return CreateGroup();
   }
-  static async createText(opt: TextGeometryType): Promise<ThreeConstruct.Geometry> {
-    const font = await CreateThree.creatFont(opt?.style?.font);
+  //文本
+  static async createText(opt: TextGeometryType): Promise<GeometryContainer> {
+    const font = await CreateThree.createFont(opt?.style?.font);
     const mat = createMaFn(opt);
-    const geo = CreateThree.creatTextGeometry(opt?.content, {
+    const geo = CreateThree.createTextGeometry(opt?.content, {
       ...opt?.style,
       font: font,
     });
@@ -100,6 +106,11 @@ export class Thes implements ThesContainer {
       thing: CreateThree.createMesh(geo, mat),
     });
   }
+  //线条
+  static createLine(opt: LineGeometryType): GeometryContainer {
+    return new CreateGeometry(opt as any, CreateLine(opt));
+  }
+  //场景
   createScene(opt: optionsType) {
     let aopt = OptionFilter(opt);
     const scene = CreateScene(aopt);

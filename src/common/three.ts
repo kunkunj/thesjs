@@ -60,9 +60,21 @@ const createPlaneGeometry = (...arg: any) => new THREE.PlaneGeometry(...arg);
 //球
 const createSphereGeometry = (...arg: any) => new THREE.SphereGeometry(...arg);
 //文本
-const creatTextGeometry = (...arg: any) => new TextGeometry(...arg);
+const createTextGeometry = (...arg: any) => new TextGeometry(...arg);
+//球
+const createLine = (...arg: any) => new THREE.Line(...arg);
+//线条
+const createLineGeometry = (...arg: any) => {
+  return new THREE.BufferGeometry().setFromPoints(
+    new Array(...arg)[0].map((item: [number, number, number]) => new THREE.Vector3(...item))
+  );
+};
+//实线
+const createBasicMaterial = (...arg: any) => new THREE.LineBasicMaterial(...arg);
+//虚线
+const createDashedMaterial = (...arg: any) => new THREE.LineDashedMaterial(...arg);
 //字体
-const creatFont = (url: string) => {
+const createFont = (url: string) => {
   return new Promise((resolve: Function) => {
     new FontLoader().load(url, (font: ThreeConstruct.Font) => {
       resolve(font);
@@ -118,6 +130,10 @@ export default {
   getModelList,
   createCubeTextureLoader,
   createTextureLoader,
-  creatTextGeometry,
-  creatFont,
+  createTextGeometry,
+  createFont,
+  createLineGeometry,
+  createBasicMaterial,
+  createDashedMaterial,
+  createLine,
 };
