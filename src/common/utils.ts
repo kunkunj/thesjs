@@ -1,5 +1,4 @@
 import idStorage from '../common/map';
-/// <reference path="./threeType/ThreeConstruct.d.ts" />
 //16进制转换
 export function octalReplace(str: string): string {
   return str.replace('#', '0x');

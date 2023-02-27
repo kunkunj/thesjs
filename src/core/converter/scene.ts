@@ -2,7 +2,6 @@ import CreateThree from '../../common/three';
 import { optionsType } from '../../types/options';
 import { isArray } from 'loadsh';
 import * as THREE from 'three';
-/// <reference path="./threeType/ThreeConstruct.d.ts" />
 const isColor = (color: ThreeConstruct.Color) => {
   return color.indexOf('rgb') == -1 ? false : true;
 };

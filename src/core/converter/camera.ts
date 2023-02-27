@@ -1,6 +1,5 @@
 import { CameraType } from '../../types/options';
 import CreateThree from '../../common/three';
-/// <reference path="./threeType/ThreeConstruct.d.ts" />
 
 export default (
   cra: CameraType,

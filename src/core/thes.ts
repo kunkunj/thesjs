@@ -1,4 +1,4 @@
-/// <reference path="../types/threeType/ThreeConstruct.d.ts" />
+
 import CreateThree from '../common/three';
 import CreateLine from './converter/line';
 import { CameraType, optionsType, PointType, AmbientType } from '../types/options';
@@ -21,10 +21,9 @@ import CreateLight from './converter/light';
 import CreateAmbient from './converter/ambient';
 import CreateControl from './converter/control';
 import CreateGeometry from './geometry';
-import CreateGroup from './group';
+import Group from './group';
 import Tween from '@tweenjs/tween.js';
 import SceneBox from './sceneBox';
-import ThesSet from './default/index';
 import { uniqBy, isArray, isNumber } from 'loadsh';
 import { createMaFn } from './converter/geometry';
 // import thesParent from '../common/thesParent';
@@ -89,7 +88,7 @@ export class Thes implements ThesContainer {
     return new CreateGeometry(geometry);
   }
   static createGroup() {
-    return CreateGroup();
+    return new Group();
   }
   //文本
   static async createText(opt: TextGeometryType): Promise<GeometryContainer> {

@@ -1,4 +1,4 @@
-/// <reference path="./threeType/ThreeConstruct.d.ts" />
+
 import { optionsType, CameraType } from './options';
 import { GeometryType } from './geometry';
 export interface ThesContainer {

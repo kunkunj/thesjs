@@ -2,7 +2,6 @@ import CreateThree from '../../common/three';
 import { ContentType, GeometryOptionType, MaterialType } from '../../types/geometry';
 import { throwError } from '../../common/utils';
 import { isArray, isObject } from 'loadsh';
-/// <reference path="./threeType/ThreeConstruct.d.ts" />
 export const createGeofn: ThreeConstruct.Geometry = (opt: GeometryOptionType) => {
   let geo: ThreeConstruct.Geometry;
   switch (opt.geometry) {
