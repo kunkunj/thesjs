@@ -50,6 +50,12 @@
     >
       进入盒子内部
     </div>
+    <div id="popup" style="width: 100px; height: 100px; background: #fff; border-radius: 10px;display: none;">
+      弹窗
+    </div>
+    <div id="popup2" style="width: 100px; height: 100px; background: #fff; border-radius: 10px;display: none;">
+      弹窗2
+    </div>
     <script>
       const th = new Thes({
         el: document.body,
@@ -201,9 +207,13 @@
         ],
         color: 'rgb(255,0,0)',
       });
-      // console.log(line.content)
-      // line.content
-      th.add(line)
+      console.log(Thes.createPopup);
+      const popup = Thes.createPopup({
+        content: document.getElementById('popup'),
+        position: [50, 100, 0],
+      });
+      popup.addTo(th);
+      th.add(line);
       th.add(geo);
       th.add(go1);
       th.add(go2);
@@ -298,6 +308,11 @@
           ],
         });
 
+        const popup2 = Thes.createPopup({
+          content: document.getElementById('popup2'),
+          position: [50, 100, 0],
+        });
+        popup2.addTo(scene);
         //使用盒子场景
         th.useScene(scene);
         console.log(th, scene);

@@ -1,4 +1,3 @@
-
 import CreateThree from '../common/three';
 import CreateLine from './converter/line';
 import { CameraType, optionsType, PointType, AmbientType } from '../types/options';
@@ -12,7 +11,7 @@ import {
   LineGeometryType,
   LineContainer,
 } from '../types/geometry';
-import { setId, throwError } from '../common/utils';
+import { setId, threeToScreen, throwError } from '../common/utils';
 import OptionFilter from '../common/optionFilter';
 import CreateCamera from './converter/camera';
 import CreateRenderer from './converter/renderer';
@@ -24,8 +23,10 @@ import CreateGeometry from './geometry';
 import Group from './group';
 import Tween from '@tweenjs/tween.js';
 import SceneBox from './sceneBox';
-import { uniqBy, isArray, isNumber } from 'loadsh';
+import { uniqBy, isArray, cloneDeep } from 'loadsh';
 import { createMaFn } from './converter/geometry';
+import { PopupContainer, PopupType } from '../types/popup';
+import { Popup } from './popup';
 // import thesParent from '../common/thesParent';
 type eventsType = { [key in 'click' | 'move' | 'leave']: 'on' | 'off' };
 //场景主函数
@@ -44,6 +45,7 @@ export class Thes implements ThesContainer {
   static getDefaultAmbientOptions: AmbientType = defaultAmbient;
   models = [];
   scenes: ThreeConstruct.Scene[] = [];
+  static popupList: PopupContainer[] = [];
   props: Array<string> = ['scale'];
   events: eventsType = {
     click: 'off',
@@ -83,6 +85,11 @@ export class Thes implements ThesContainer {
       this.camera
     );
     this.control = CreateControl(this.camera, this.renderer);
+    this.control.enableRotate = true;
+    this.control.rotateSpeed = 0.5;
+    this.control.enableDamping = true;
+    this.control.dampingFactor = 0.1;
+    this.onChange();
   }
   static createGeometry(geometry: GeometryOptionType) {
     return new CreateGeometry(geometry);
@@ -109,6 +116,12 @@ export class Thes implements ThesContainer {
   static createLine(opt: LineGeometryType): GeometryContainer {
     return new CreateGeometry(opt as any, CreateLine(opt));
   }
+  //弹窗
+  static createPopup(opt: PopupType): PopupContainer {
+    let popup = new Popup(opt);
+    Thes.popupList.push(popup);
+    return popup;
+  }
   //场景
   createScene(opt: optionsType) {
     let aopt = OptionFilter(opt);
@@ -116,18 +129,27 @@ export class Thes implements ThesContainer {
     CreateLight(aopt.lights as PointType, scene);
     CreateAmbient(aopt.ambientLight, scene);
     const sceneBox = new SceneBox(scene);
-    setId('scene', sceneBox);
+    sceneBox.opt = { ...opt, el: this.opt.el };
+    sceneBox.camera = this.camera;
     sceneBox.name = opt.sceneName || 'scene' + scene.cid;
     this.scenes.push(sceneBox);
     return sceneBox;
   }
   //使用场景
   useScene(scene: SceneBoxType) {
+    Thes.popupList.map((item: PopupContainer) => {
+      if (item.th.cid === scene.cid) {
+        item.show();
+      } else if (item.th.cid !== scene.cid) {
+        item.hide();
+      }
+    });
     if (!scene || !scene.scene.isObject3D) {
       throwError('请输入正确的场景');
     }
     //第一次加载只设置场景
     if (!this.scene) {
+      this.sceneBox = cloneDeep(scene);
       this.scene = scene.scene;
       return;
     }
@@ -135,6 +157,7 @@ export class Thes implements ThesContainer {
     if (this.scene.cid == scene.cid) {
       return;
     }
+    this.sceneBox = cloneDeep(scene);
     //切换重置场景
     this.scene = scene.scene;
     cancelAnimationFrame(this.renderer.aniID);
@@ -148,7 +171,6 @@ export class Thes implements ThesContainer {
     // this.renderer.render(scene, camera);
   }
   add(me: GeometryContainer, sceneBoxId: number): boolean {
-    let bl: boolean = false;
     if (!me) {
       throwError('模型不可以为null');
       return false;
@@ -198,6 +220,19 @@ export class Thes implements ThesContainer {
       this.opt.el.removeEventListener(type, () => {});
       this.events[type] == 'off';
     }
+  }
+  onChange() {
+    this.control.addEventListener('change', () => {
+      Thes.popupList.map(item => {
+        if (item.th.cid === this.sceneBox.cid) {
+          item.setPosition(
+            threeToScreen(item.opt.position, this.camera, item.opt.content as HTMLElement).top,
+            threeToScreen(item.opt.position, this.camera, item.opt.content as HTMLElement)
+              .left as any
+          );
+        }
+      });
+    });
   }
   clear(): void {
     this.opt.el.innerHTML = '';

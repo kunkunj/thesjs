@@ -101,6 +101,9 @@ const getModelList = (event: any, camera: any, scene: any) => {
   let intersects = rayCaster.intersectObjects(scene.children, true);
   return intersects.map((item: any) => item.object);
 };
+const vector3 = (position: [number, number, number]) => {
+  return new THREE.Vector3(...position)
+}
 export default {
   THREE,
   createScene,
@@ -136,4 +139,5 @@ export default {
   createBasicMaterial,
   createDashedMaterial,
   createLine,
+  vector3
 };

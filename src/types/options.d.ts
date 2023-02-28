@@ -146,7 +146,7 @@ export type AmbientType = {
  * ambientLight -- 环境光
  */
 export type optionsType = {
-  el: Element;
+  el: HTMLElement;
   view: number;
   sceneName: any;
   camera: CameraType;

@@ -11,7 +11,7 @@ import { geometryInspect } from './inspect/inspect';
 import CreateGeometry from './converter/geometry';
 import Tween from '@tweenjs/tween.js';
 import { isArray, isObject, isString } from 'loadsh';
-/// <reference path="../types/threeType/ThreeConstruct.ts" />
+/// 
 export default class Geometry implements GeometryContainer {
   id = -1;
   opt: GeometryOptionType | undefined;
