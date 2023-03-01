@@ -1,12 +1,13 @@
 import CreateThree from '../common/three';
 import { GroupContainer, GroupType } from '../types/group';
 import { setId, throwError } from '../common/utils';
+import { _CONSTANT_ } from '../common/constant';
 export default class Group implements GroupContainer {
   id = -1;
   content:GroupType
   tween: any;
   constructor() {
-    setId('group', this)
+    setId(_CONSTANT_.GROUPIDNAME, this)
     this.content = {
       thing: CreateThree.createGroup()
     }

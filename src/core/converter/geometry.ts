@@ -2,10 +2,11 @@ import CreateThree from '../../common/three';
 import { ContentType, GeometryOptionType, MaterialType } from '../../types/geometry';
 import { throwError } from '../../common/utils';
 import { isArray, isObject } from 'loadsh';
+import { _CONSTANT_GEOMETRY_ } from '../../common/constant';
 export const createGeofn: ThreeConstruct.Geometry = (opt: GeometryOptionType) => {
   let geo: ThreeConstruct.Geometry;
   switch (opt.geometry) {
-    case 'BoxGeometry':
+    case _CONSTANT_GEOMETRY_.BoxGeometry:
       geo = CreateThree.createBoxGeometry(
         opt?.geometryOption?.width || 10,
         opt?.geometryOption?.height || 10,
@@ -15,7 +16,7 @@ export const createGeofn: ThreeConstruct.Geometry = (opt: GeometryOptionType) =>
         opt?.geometryOption?.depthSegments || 1
       );
       break;
-    case 'CircleGeometry':
+    case _CONSTANT_GEOMETRY_.CircleGeometry:
       geo = CreateThree.createCircleGeometry(
         opt?.geometryOption?.radius || 10,
         opt?.geometryOption?.segments || 10,
@@ -23,7 +24,7 @@ export const createGeofn: ThreeConstruct.Geometry = (opt: GeometryOptionType) =>
         opt?.geometryOption?.thetaLength || 2 * Math.PI
       );
       break;
-    case 'ConeGeometry':
+    case _CONSTANT_GEOMETRY_.ConeGeometry:
       geo = CreateThree.createConeGeometry(
         opt?.geometryOption?.radius || 10,
         opt?.geometryOption?.height || 10,
@@ -34,7 +35,7 @@ export const createGeofn: ThreeConstruct.Geometry = (opt: GeometryOptionType) =>
         opt?.geometryOption?.thetaLength || 2 * Math.PI
       );
       break;
-    case 'CylinderGeometry':
+    case _CONSTANT_GEOMETRY_.CylinderGeometry:
       geo = CreateThree.createCylinderGeometry(
         opt?.geometryOption?.radiusTop || 10,
         opt?.geometryOption?.radiusBottom || 10,
@@ -46,7 +47,7 @@ export const createGeofn: ThreeConstruct.Geometry = (opt: GeometryOptionType) =>
         opt?.geometryOption?.thetaLength || 2 * Math.PI
       );
       break;
-    case 'PlaneGeometry':
+    case _CONSTANT_GEOMETRY_.PlaneGeometry:
       geo = CreateThree.createPlaneGeometry(
         opt?.geometryOption?.width || 10,
         opt?.geometryOption?.height || 10,
@@ -54,7 +55,7 @@ export const createGeofn: ThreeConstruct.Geometry = (opt: GeometryOptionType) =>
         opt?.geometryOption?.heightSegments || 1
       );
       break;
-    case 'SphereGeometry':
+    case _CONSTANT_GEOMETRY_.SphereGeometry:
       geo = CreateThree.createSphereGeometry(
         opt?.geometryOption?.radius || 10,
         opt?.geometryOption?.widthSegments || 32,

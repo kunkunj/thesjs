@@ -1,12 +1,15 @@
 
 /**---------------------------------相机相关--------------------------------------- */
+
+import { _CONSTANT_CAMERA_, _CONSTANT_LIGHT_ } from "../common/constant";
+
 /**
  * 立方相机（CubeCamera）
  * 正交相机（OrthographicCamera）
  * 透视相机（PerspectiveCamera）
  * 立体相机（StereoCamera）
  */
-export type Cameras = 'CubeCamera' | 'OrthographicCamera' | 'PerspectiveCamera' | 'StereoCamera';
+export type Cameras = _CONSTANT_CAMERA_.CubeCamera | _CONSTANT_CAMERA_.OrthographicCamera | _CONSTANT_CAMERA_.PerspectiveCamera | 'StereoCamera';
 
 export type PerspectiveCameraType = {
   fov: number; //视野角度
@@ -103,7 +106,7 @@ export type SpotLightType = {
  * 平面光光源（RectAreaLight）
  * 聚光灯（SpotLight）
  */
-export type Lights = 'PointLight' | 'RectAreaLight' | 'SpotLight';
+export type Lights = _CONSTANT_LIGHT_.PointLight | _CONSTANT_LIGHT_.RectAreaLight | _CONSTANT_LIGHT_.SpotLight;
 /**
  * 光源参数
  * type -- 光源类型

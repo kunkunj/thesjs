@@ -11,6 +11,7 @@ import { geometryInspect } from './inspect/inspect';
 import CreateGeometry from './converter/geometry';
 import Tween from '@tweenjs/tween.js';
 import { isArray, isObject, isString } from 'loadsh';
+import { _CONSTANT_ } from '../common/constant';
 /// 
 export default class Geometry implements GeometryContainer {
   id = -1;
@@ -19,8 +20,7 @@ export default class Geometry implements GeometryContainer {
   tween: any;
   static props = [];
   constructor(opt: GeometryOptionType, geo?: ThreeConstruct.Geometry) {
-    console.log(geo);
-    setId('geometry', this);
+    setId(_CONSTANT_.GEOMETRYIDNAME, this);
     this.opt = opt;
     let geometry: ContentType;
     if (typeof geo == 'undefined') {

@@ -1,5 +1,8 @@
 
 /**---------------------------------材质相关--------------------------------------- */
+
+import { _CONSTANT_GEOMETRY_ } from "../common/constant";
+
 /**
  * MeshBasicMaterial -- 基础网格材质，不受光照影响的材质
  * MeshLambertMaterial -- Lambert网格材质，与光照有反应，漫反射
@@ -29,12 +32,12 @@ export type Geometry = 'geometry';
  * SphereGeometry -- 球
  */
 export type GeometryList =
-  | 'BoxGeometry'
-  | 'CircleGeometry'
-  | 'ConeGeometry'
-  | 'CylinderGeometry'
-  | 'PlaneGeometry'
-  | 'SphereGeometry';
+  | _CONSTANT_GEOMETRY_.BoxGeometry
+  | _CONSTANT_GEOMETRY_.CircleGeometry
+  | _CONSTANT_GEOMETRY_.ConeGeometry
+  | _CONSTANT_GEOMETRY_.CylinderGeometry
+  | _CONSTANT_GEOMETRY_.PlaneGeometry
+  | _CONSTANT_GEOMETRY_.SphereGeometry;
 // | 'TextGeometry';
 /**
  * 文本

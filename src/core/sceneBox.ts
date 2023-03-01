@@ -2,6 +2,7 @@ import { SceneBoxType } from '../types/thesFull';
 import { GeometryContainer } from '../types/geometry';
 import { optionsType } from '../types/options';
 import { setId } from '../common/utils';
+import { _CONSTANT_ } from '../common/constant';
 export default class SceneBox implements SceneBoxType {
   scene: ThreeConstruct.Scene;
   name: string = '';
@@ -9,7 +10,7 @@ export default class SceneBox implements SceneBoxType {
   opt: optionsType | null = null;
   camera:ThreeConstruct.Camera
   constructor(scene: ThreeConstruct.Scene) {
-    setId('scene', this);
+    setId(_CONSTANT_.SCENEIDNAME, this);
     this.scene = scene;
   }
   add(me: GeometryContainer) {

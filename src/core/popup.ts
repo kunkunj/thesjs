@@ -1,3 +1,4 @@
+import { _CONSTANT_ } from '../common/constant';
 import { setId, threeToScreen } from '../common/utils';
 import { PopupContainer, PopupType } from '../types/popup';
 import { ThesContainer } from '../types/thesFull';
@@ -9,7 +10,7 @@ export class Popup implements PopupContainer {
   th: any;
   //   pDom: HTMLElement;
   constructor(opt: PopupType) {
-    setId('popup', this);
+    setId(_CONSTANT_.POPUPIDNAME, this);
     popupInspect(opt);
     // this.pDom = pDom;
     this.opt = opt;

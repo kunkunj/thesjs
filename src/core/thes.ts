@@ -27,8 +27,12 @@ import { uniqBy, isArray, cloneDeep } from 'loadsh';
 import { createMaFn } from './converter/geometry';
 import { PopupContainer, PopupType } from '../types/popup';
 import { Popup } from './popup';
+import { _CONSTANT_, _Events } from '../common/constant';
 // import thesParent from '../common/thesParent';
-type eventsType = { [key in 'click' | 'move' | 'leave']: 'on' | 'off' };
+
+type eventsType = {
+  [index in _Events]: _CONSTANT_.EVENTON | _CONSTANT_.EVENTOFF;
+};
 //场景主函数
 export class Thes implements ThesContainer {
   id = -1;
@@ -46,11 +50,14 @@ export class Thes implements ThesContainer {
   models = [];
   scenes: ThreeConstruct.Scene[] = [];
   static popupList: PopupContainer[] = [];
-  props: Array<string> = ['scale'];
+  props: Array<string> = [];
   events: eventsType = {
-    click: 'off',
-    move: 'off',
-    leave: 'off',
+    [_CONSTANT_.EVENTCLICK]: _CONSTANT_.EVENTOFF,
+    [_CONSTANT_.EVENTDOWN]: _CONSTANT_.EVENTOFF,
+    [_CONSTANT_.EVENTLEAVE]: _CONSTANT_.EVENTOFF,
+    [_CONSTANT_.EVENTMOVE]: _CONSTANT_.EVENTOFF,
+    [_CONSTANT_.EVENTOVER]: _CONSTANT_.EVENTOFF,
+    [_CONSTANT_.EVENTUP]: _CONSTANT_.EVENTOFF,
   };
   constructor(opt: optionsType) {
     //赋值id
@@ -131,7 +138,7 @@ export class Thes implements ThesContainer {
     const sceneBox = new SceneBox(scene);
     sceneBox.opt = { ...opt, el: this.opt.el };
     sceneBox.camera = this.camera;
-    sceneBox.name = opt.sceneName || 'scene' + scene.cid;
+    sceneBox.name = opt.sceneName || _CONSTANT_.DEFAULTSCENENAME + scene.cid;
     this.scenes.push(sceneBox);
     return sceneBox;
   }
@@ -198,16 +205,16 @@ export class Thes implements ThesContainer {
   }
   on(type: keyof eventsType, cb: Function) {
     switch (type) {
-      case 'click':
-        if (this.events[type] == 'off') {
-          this.opt.el.addEventListener('click', event =>
+      case _CONSTANT_.EVENTCLICK:
+        if (this.events[type] == _CONSTANT_.EVENTOFF) {
+          this.opt.el.addEventListener(_CONSTANT_.EVENTCLICK, event =>
             cb(
               isArray(CreateThree.getModelList(event, this.camera, this.scene))
-                ? uniqBy(CreateThree.getModelList(event, this.camera, this.scene), 'uuid')
+                ? uniqBy(CreateThree.getModelList(event, this.camera, this.scene), _CONSTANT_.UNIQKEY)
                 : []
             )
           );
-          this.events['click'] = 'on';
+          this.events[_CONSTANT_.EVENTCLICK] = _CONSTANT_.EVENTON;
         }
         break;
 
@@ -216,13 +223,13 @@ export class Thes implements ThesContainer {
     }
   }
   off(type: keyof eventsType) {
-    if (this.events[type] == 'on') {
+    if (this.events[type] == _CONSTANT_.EVENTON) {
       this.opt.el.removeEventListener(type, () => {});
-      this.events[type] == 'off';
+      this.events[type] == _CONSTANT_.EVENTOFF;
     }
   }
   onChange() {
-    this.control.addEventListener('change', () => {
+    this.control.addEventListener(_CONSTANT_.EVENTCHANGE, () => {
       Thes.popupList.map(item => {
         if (item.th.cid === this.sceneBox.cid) {
           item.setPosition(
