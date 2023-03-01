@@ -147,11 +147,11 @@ export type AmbientType = {
  */
 export type optionsType = {
   el: HTMLElement;
-  view: number;
-  sceneName: any;
   camera: CameraType;
   width: number;
   height: number;
+  view?: number;
+  sceneName?: string;
   lights?: PointType;
   ambientLight: AmbientType;
   background?: ThreeConstruct.Color | ThreeConstruct.CubeTexture | ThreeConstruct.Texture;

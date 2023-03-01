@@ -11,5 +11,11 @@ export default (opt: optionsType): optionsType => {
       opt[key as keyof optionsType] = defaultOption[key as keyof optionsType];
     }
   }
+  if (!opt.width) {
+    opt.width = window?.innerWidth
+  }
+  if (!opt.height) {
+    opt.height = window?.innerHeight
+  }
   return opt;
 };

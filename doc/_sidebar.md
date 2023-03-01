@@ -1,0 +1,6 @@
+- 开发指南
+  - [安装](/pages/install.md)
+  - [快速上手](/pages/quickstart.md)
+- api
+  - [Thes（渲染器）](/zh-cn/thes.md)
+  - [Thes.createGeometry（模型）](/zh-cn/createGeometry.md)
