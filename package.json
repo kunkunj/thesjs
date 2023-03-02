@@ -1,8 +1,8 @@
 {
   "name": "thesjs",
-  "version": "0.0.1-beta.4",
+  "version": "0.0.1-beta.7",
   "description": "",
-  "main": "src/index.ts",
+  "main": "dist/thes.min.js",
   "scripts": {
     "build": "rollup -c",
     "serve:three": "cross-env ENV=Three rollup -c -w",
@@ -15,6 +15,9 @@
     "thesjs",
     "3d",
     "ts"
+  ],
+  "files": [
+    "dist"
   ],
   "devDependencies": {
     "@babel/core": "^7.18.6",

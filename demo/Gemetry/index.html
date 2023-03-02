@@ -89,8 +89,8 @@
 
       //单颜色正方体
       const geo = Thes.createGeometry({
-        geometry: 'BoxGeometry',
-        material: 'MeshBasicMaterial',
+        geometry: 'box',
+        material: 'basic',
         position: [0, 0, 0],
         materialOption: {
           map: '../assets/mb.jpg',
@@ -98,8 +98,8 @@
       });
       //彩色正方体
       let go1 = Thes.createGeometry({
-        geometry: 'BoxGeometry',
-        material: 'MeshBasicMaterial',
+        geometry: 'box',
+        material: 'basic',
         position: [25, 0, 0],
         materialOption: [
           {
@@ -124,8 +124,8 @@
       });
       //平面圆
       const go2 = Thes.createGeometry({
-        geometry: 'CircleGeometry',
-        material: 'MeshBasicMaterial',
+        geometry: 'circle',
+        material: 'basic',
         position: [50, 0, 0],
         materialOption: {
           color: 'rgb(255,255,0)',
@@ -133,8 +133,8 @@
       });
       //圆锥
       const go3 = Thes.createGeometry({
-        geometry: 'ConeGeometry',
-        material: 'MeshBasicMaterial',
+        geometry: 'cone',
+        material: 'basic',
         position: [-25, 0, 0],
         materialOption: [
           {
@@ -150,8 +150,8 @@
       });
       //圆柱
       const go4 = Thes.createGeometry({
-        geometry: 'CylinderGeometry',
-        material: 'MeshBasicMaterial',
+        geometry: 'cylinder',
+        material: 'basic',
         position: [-50, 0, 0],
         materialOption: [
           {
@@ -167,8 +167,8 @@
       });
       //平面
       const go5 = Thes.createGeometry({
-        geometry: 'PlaneGeometry',
-        material: 'MeshBasicMaterial',
+        geometry: 'plane',
+        material: 'basic',
         position: [75, 0, 0],
         materialOption: {
           color: 'rgb(255,255,0)',
@@ -176,8 +176,8 @@
       });
       //球体
       const go6 = Thes.createGeometry({
-        geometry: 'SphereGeometry',
-        material: 'MeshBasicMaterial',
+        geometry: 'sphere',
+        material: 'basic',
         materialOption: {
           color: 'rgb(0,255,0)',
         },
@@ -190,7 +190,7 @@
           size: 12,
           height: 1,
         },
-        material: 'MeshBasicMaterial',
+        material: 'basic',
         position: [0, 50, 0],
         materialOption: {
           color: 'rgb(0,0,0)',

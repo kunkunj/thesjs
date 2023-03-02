@@ -62,10 +62,16 @@ export enum _CONSTANT_LIGHT_ {
  * 模型
  */
 export enum _CONSTANT_GEOMETRY_ {
-  BoxGeometry = 'BoxGeometry',
-  CircleGeometry = 'CircleGeometry',
-  ConeGeometry = 'ConeGeometry',
-  CylinderGeometry = 'CylinderGeometry',
-  PlaneGeometry = 'PlaneGeometry',
-  SphereGeometry = 'SphereGeometry',
+  BoxGeometry = 'box',
+  CircleGeometry = 'circle',
+  ConeGeometry = 'cone',
+  CylinderGeometry = 'cylinder',
+  PlaneGeometry = 'plane',
+  SphereGeometry = 'sphere',
 }
+/**
+ * 材质
+ */
+export enum _CONSTANT_MATERAIL_ {
+    MeshBasicMaterial = 'basic',
+  }

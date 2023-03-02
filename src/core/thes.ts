@@ -10,6 +10,7 @@ import {
   ContentType,
   LineGeometryType,
   LineContainer,
+  LoaderType,
 } from '../types/geometry';
 import { setId, threeToScreen, throwError } from '../common/utils';
 import OptionFilter from '../common/optionFilter';
@@ -20,6 +21,7 @@ import CreateLight from './converter/light';
 import CreateAmbient from './converter/ambient';
 import CreateControl from './converter/control';
 import CreateGeometry from './geometry';
+import CreateLoader from './converter/loader'
 import Group from './group';
 import Tween from '@tweenjs/tween.js';
 import SceneBox from './sceneBox';
@@ -128,6 +130,10 @@ export class Thes implements ThesContainer {
     let popup = new Popup(opt);
     Thes.popupList.push(popup);
     return popup;
+  }
+  //loader
+  static createLoader(opt:LoaderType): GeometryContainer {
+    return new CreateGeometry(opt as any, CreateLoader(opt));
   }
   //场景
   createScene(opt: optionsType) {

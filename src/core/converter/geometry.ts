@@ -2,7 +2,7 @@ import CreateThree from '../../common/three';
 import { ContentType, GeometryOptionType, MaterialType } from '../../types/geometry';
 import { throwError } from '../../common/utils';
 import { isArray, isObject } from 'loadsh';
-import { _CONSTANT_GEOMETRY_ } from '../../common/constant';
+import { _CONSTANT_GEOMETRY_, _CONSTANT_MATERAIL_ } from '../../common/constant';
 export const createGeofn: ThreeConstruct.Geometry = (opt: GeometryOptionType) => {
   let geo: ThreeConstruct.Geometry;
   switch (opt.geometry) {
@@ -75,7 +75,7 @@ export const createGeofn: ThreeConstruct.Geometry = (opt: GeometryOptionType) =>
 export const createMaFn: ThreeConstruct.Material = (opt: GeometryOptionType) => {
   let mat: ThreeConstruct.Material;
   switch (opt.material) {
-    case 'MeshBasicMaterial':
+    case _CONSTANT_MATERAIL_.MeshBasicMaterial:
       if (isObject(opt.materialOption)) {
         let map: ThreeConstruct.Texture;
         if (opt.materialOption?.map) {

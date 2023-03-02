@@ -1,7 +1,6 @@
-
 /**---------------------------------材质相关--------------------------------------- */
 
-import { _CONSTANT_GEOMETRY_ } from "../common/constant";
+import { _CONSTANT_GEOMETRY_ } from '../common/constant';
 
 /**
  * MeshBasicMaterial -- 基础网格材质，不受光照影响的材质
@@ -10,7 +9,7 @@ import { _CONSTANT_GEOMETRY_ } from "../common/constant";
  * MeshStandardMaterial -- PBR物理材质，相比较高光Phong材质可以更好的模拟金属、玻璃等效果
  */
 export type MaterialList =
-  | 'MeshBasicMaterial'
+  | _CONSTANT_MATERAIL_.MeshBasicMaterial
   | 'MeshLambertMaterial'
   | 'MeshPhongMaterial'
   | 'MeshStandardMaterial';
@@ -266,4 +265,25 @@ export type LineContainer = {
   id: number;
   content: ContentType;
   opt: LineGeometryType | undefined;
-}
+};
+/**
+ * loader
+ * type -- 文件类型
+ * url -- 文件地址
+ * mtlurl -- obj时的材质模型
+ * loaderOption:{
+ *  color -- 颜色
+ *  position -- 位置
+ * }
+ */
+export type LoaderList = 'obj' | 'mmd' | 'gltf'
+export type LoaderOptionType = {
+  color?: string;
+  position?: [number, number, number];
+};
+export type LoaderType = {
+  type: LoaderList;
+  url: string;
+  mtlUrl?: string;
+  loaderOption?: LoaderOptionType;
+};
