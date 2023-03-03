@@ -43,6 +43,7 @@ export default (
       break;
   }
   camera.position.set(cra.position.x, cra.position.y, cra.position.z);
+  camera._LOOKCENTER = scene.position
   camera.lookAt(scene.position);
   return camera;
 };

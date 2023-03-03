@@ -9,6 +9,7 @@ export type PopupType = {
 export interface PopupContainer {
   cid: number;
   opt: PopupType;
+  isShow: boolean
   th: any;
   setStyle(): void;
   setPosition(top: number, left: number): void;

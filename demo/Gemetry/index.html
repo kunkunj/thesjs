@@ -48,12 +48,30 @@
       style="position: absolute; top: 130px; cursor: pointer; border: 1px solid; left: 10px"
       onclick="inBox()"
     >
-      进入盒子内部
+      切换场景
     </div>
-    <div id="popup" style="width: 100px; height: 100px; background: #fff; border-radius: 10px;display: none;">
+    <div
+      style="position: absolute; top: 160px; cursor: pointer; border: 1px solid; left: 10px"
+      onclick="changeP1()"
+    >
+      全局切换视角
+    </div>
+    <div
+      style="position: absolute; top: 190px; cursor: pointer; border: 1px solid; left: 10px"
+      onclick="changeP2()"
+    >
+      切换内部的视角
+    </div>
+    <div
+      id="popup"
+      style="width: 100px; height: 100px; background: #fff; border-radius: 10px; display: none"
+    >
       弹窗
     </div>
-    <div id="popup2" style="width: 100px; height: 100px; background: #fff; border-radius: 10px;display: none;">
+    <div
+      id="popup2"
+      style="width: 100px; height: 100px; background: #fff; border-radius: 10px; display: none"
+    >
       弹窗2
     </div>
     <script>
@@ -207,12 +225,6 @@
         ],
         color: 'rgb(255,0,0)',
       });
-      console.log(Thes.createPopup);
-      const popup = Thes.createPopup({
-        content: document.getElementById('popup'),
-        position: [50, 100, 0],
-      });
-      popup.addTo(th);
       th.add(line);
       th.add(geo);
       th.add(go1);
@@ -274,48 +286,67 @@
         go6.delete();
         line.delete();
       }
-      function createScene() {
-        console.log(th);
-      }
+      const scene = th.createScene({
+        el: document.body,
+        view: 800,
+        camera: {
+          type: 'PerspectiveCamera',
+          position: {
+            x: 200,
+            y: 300,
+            z: 200,
+          },
+          PerspectiveCameraOption: {
+            fov: 45,
+            aspectRatio: window?.innerWidth / window?.innerHeight,
+            near: 1,
+            far: 1000,
+          },
+        },
+        width: window?.innerWidth || 1000,
+        height: window?.innerHeight || 1000,
+        background: [
+          '../assets/mb.jpg',
+          '../assets/mb.jpg',
+          '../assets/mb.jpg',
+          '../assets/mb.jpg',
+          '../assets/mb.jpg',
+          '../assets/mb.jpg',
+        ],
+      });
+      const popup = Thes.createPopup({
+        content: document.getElementById('popup'),
+        position: [50, 100, 0],
+      });
+      popup.addTo(th);
+      const popup2 = Thes.createPopup({
+        content: document.getElementById('popup2'),
+        position: [0, 0, 0],
+      });
+      popup2.addTo(scene);
       function inBox() {
         //创建盒子场景
-        const scene = th.createScene({
-          el: document.body,
-          view: 800,
-          camera: {
-            type: 'PerspectiveCamera',
-            position: {
-              x: 200,
-              y: 300,
-              z: 200,
-            },
-            PerspectiveCameraOption: {
-              fov: 45,
-              aspectRatio: window?.innerWidth / window?.innerHeight,
-              near: 1,
-              far: 1000,
-            },
-          },
-          width: window?.innerWidth || 1000,
-          height: window?.innerHeight || 1000,
-          background: [
-            '../assets/mb.jpg',
-            '../assets/mb.jpg',
-            '../assets/mb.jpg',
-            '../assets/mb.jpg',
-            '../assets/mb.jpg',
-            '../assets/mb.jpg',
-          ],
-        });
-
-        const popup2 = Thes.createPopup({
-          content: document.getElementById('popup2'),
-          position: [50, 100, 0],
-        });
-        popup2.addTo(scene);
         //使用盒子场景
-        th.useScene(scene);
+        if (th.sceneBox.cid == 2) {
+          th.useScene(th.scenes[0]);
+        } else {
+          th.useScene(th.scenes[1]);
+        }
         console.log(th, scene);
+      }
+      function changeP1() {
+        th.setCenter({
+          x: 50,
+          y: 50,
+          z: 50,
+        });
+      }
+      function changeP2() {
+        scene.setCenter({
+          x: 50,
+          y: 50,
+          z: 50,
+        });
       }
       th.on('click', list => {
         console.log(list);

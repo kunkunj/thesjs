@@ -2,7 +2,7 @@ import CreateThree from '../common/three';
 import CreateLine from './converter/line';
 import { CameraType, optionsType, PointType, AmbientType } from '../types/options';
 import { defaultCamera, defaultLight, defaultAmbient } from '../data/option';
-import { ThesContainer, SceneBoxType } from '../types/thesFull';
+import { ThesContainer, SceneBoxType, PositionType } from '../types/thesFull';
 import {
   GeometryOptionType,
   GeometryContainer,
@@ -21,7 +21,7 @@ import CreateLight from './converter/light';
 import CreateAmbient from './converter/ambient';
 import CreateControl from './converter/control';
 import CreateGeometry from './geometry';
-import CreateLoader from './converter/loader'
+import CreateLoader from './converter/loader';
 import Group from './group';
 import Tween from '@tweenjs/tween.js';
 import SceneBox from './sceneBox';
@@ -29,10 +29,12 @@ import { uniqBy, isArray, cloneDeep } from 'loadsh';
 import { createMaFn } from './converter/geometry';
 import { PopupContainer, PopupType } from '../types/popup';
 import { Popup } from './popup';
-import { _CONSTANT_, _Events } from '../common/constant';
+import { _CONSTANT_, _CONSTANT_BUS_, _Events } from '../common/constant';
+import { _bus } from '../common/bus';
+import { Collecter } from '../common/collecter';
 // import thesParent from '../common/thesParent';
 
-type eventsType = {
+type EventsType = {
   [index in _Events]: _CONSTANT_.EVENTON | _CONSTANT_.EVENTOFF;
 };
 //场景主函数
@@ -49,17 +51,20 @@ export class Thes implements ThesContainer {
   static getDefaultCameraOptions: CameraType = defaultCamera;
   static getDefaultLightOptions: PointType = defaultLight;
   static getDefaultAmbientOptions: AmbientType = defaultAmbient;
+  static MOUSE = CreateThree.THREE.MOUSE;
   models = [];
   scenes: ThreeConstruct.Scene[] = [];
   static popupList: PopupContainer[] = [];
   props: Array<string> = [];
-  events: eventsType = {
+  events: EventsType = {
     [_CONSTANT_.EVENTCLICK]: _CONSTANT_.EVENTOFF,
     [_CONSTANT_.EVENTDOWN]: _CONSTANT_.EVENTOFF,
     [_CONSTANT_.EVENTLEAVE]: _CONSTANT_.EVENTOFF,
     [_CONSTANT_.EVENTMOVE]: _CONSTANT_.EVENTOFF,
     [_CONSTANT_.EVENTOVER]: _CONSTANT_.EVENTOFF,
     [_CONSTANT_.EVENTUP]: _CONSTANT_.EVENTOFF,
+    [_CONSTANT_.LOADED]: _CONSTANT_.EVENTOFF,
+    [_CONSTANT_.ONPROGRESS]: _CONSTANT_.EVENTOFF,
   };
   constructor(opt: optionsType) {
     //赋值id
@@ -67,12 +72,7 @@ export class Thes implements ThesContainer {
     //格式化数据
     this.opt = OptionFilter(opt);
     this.sceneBox = this.createScene(this.opt);
-    this.useScene(this.sceneBox);
-    //创建场景
-    // this.scene = CreateScene(this.opt);
-    // setId('scene', this.scene);
-    // this.scenes.push(this.scene);
-    //创建相机
+    this.useScene(this.sceneBox as SceneBoxType & ThesContainer);
     this.camera = CreateCamera(
       this.opt.camera,
       this.scene,
@@ -80,6 +80,11 @@ export class Thes implements ThesContainer {
       this.opt.height,
       this.opt.view
     );
+    //创建场景
+    // this.scene = CreateScene(this.opt);
+    // setId('scene', this.scene);
+    // this.scenes.push(this.scene);
+    //创建相机
     //创建光源
     // this.light = CreateLight(this.opt.lights as PointType, this.scene);
     //创建环境光
@@ -98,7 +103,8 @@ export class Thes implements ThesContainer {
     this.control.rotateSpeed = 0.5;
     this.control.enableDamping = true;
     this.control.dampingFactor = 0.1;
-    this.onChange();
+    this._POPUP_ChANGE();
+    this._INIT();
   }
   static createGeometry(geometry: GeometryOptionType) {
     return new CreateGeometry(geometry);
@@ -132,8 +138,14 @@ export class Thes implements ThesContainer {
     return popup;
   }
   //loader
-  static createLoader(opt:LoaderType): GeometryContainer {
+  static createLoader(opt: LoaderType): GeometryContainer {
     return new CreateGeometry(opt as any, CreateLoader(opt));
+  }
+  static createVector3(position: [number, number, number]) {
+    return CreateThree.vector3(position);
+  }
+  static createWebGLCubeRenderTarget(): null {
+    return null;
   }
   //场景
   createScene(opt: optionsType) {
@@ -149,14 +161,13 @@ export class Thes implements ThesContainer {
     return sceneBox;
   }
   //使用场景
-  useScene(scene: SceneBoxType) {
-    Thes.popupList.map((item: PopupContainer) => {
-      if (item.th.cid === scene.cid) {
-        item.show();
-      } else if (item.th.cid !== scene.cid) {
-        item.hide();
-      }
-    });
+  useScene(sc: SceneBoxType & ThesContainer) {
+    let scene: SceneBoxType;
+    if (sc.sceneBox) {
+      scene = sc.sceneBox;
+    } else {
+      scene = sc;
+    }
     if (!scene || !scene.scene.isObject3D) {
       throwError('请输入正确的场景');
     }
@@ -164,6 +175,9 @@ export class Thes implements ThesContainer {
     if (!this.scene) {
       this.sceneBox = cloneDeep(scene);
       this.scene = scene.scene;
+      this.camera = scene.camera;
+      this._FILTERPOP();
+      // this._SET_CAMERA_CENTER();
       return;
     }
     //判断切换的是否是当前场景
@@ -173,6 +187,9 @@ export class Thes implements ThesContainer {
     this.sceneBox = cloneDeep(scene);
     //切换重置场景
     this.scene = scene.scene;
+    this.camera = scene.camera;
+    this._FILTERPOP();
+    this._SET_CAMERA_CENTER();
     cancelAnimationFrame(this.renderer.aniID);
     let _ = this;
     function render() {
@@ -209,32 +226,108 @@ export class Thes implements ThesContainer {
     }
     return false;
   }
-  on(type: keyof eventsType, cb: Function) {
+  on(type: keyof EventsType, cb: Function) {
     switch (type) {
       case _CONSTANT_.EVENTCLICK:
         if (this.events[type] == _CONSTANT_.EVENTOFF) {
           this.opt.el.addEventListener(_CONSTANT_.EVENTCLICK, event =>
             cb(
               isArray(CreateThree.getModelList(event, this.camera, this.scene))
-                ? uniqBy(CreateThree.getModelList(event, this.camera, this.scene), _CONSTANT_.UNIQKEY)
+                ? uniqBy(
+                    CreateThree.getModelList(event, this.camera, this.scene),
+                    _CONSTANT_.UNIQKEY
+                  )
                 : []
             )
           );
           this.events[_CONSTANT_.EVENTCLICK] = _CONSTANT_.EVENTON;
         }
         break;
-
+      case _CONSTANT_.LOADED:
+        _bus.$on(_CONSTANT_.LOADED, () => {
+          cb(this);
+        });
+        break;
+      case _CONSTANT_.ONPROGRESS:
+        _bus.$on(_CONSTANT_.ONPROGRESS, (num: any) => {
+          cb(num);
+        });
+        break;
       default:
+        throwError('Thes没有相关事件:' + type);
         break;
     }
   }
-  off(type: keyof eventsType) {
+  off(type: keyof EventsType) {
     if (this.events[type] == _CONSTANT_.EVENTON) {
-      this.opt.el.removeEventListener(type, () => {});
       this.events[type] == _CONSTANT_.EVENTOFF;
+      try {
+        this.opt.el.removeEventListener(type, () => {});
+      } catch (error) {}
     }
   }
-  onChange() {
+  //获取视图中心的地图坐标
+  getCenter(): PositionType | undefined {
+    return this.sceneBox.cameraInit._LOOKCENTER;
+  }
+  //全局切换视图中心
+  setCenter(_LOOKCENTER: PositionType) {
+    this.scenes.map((item: ThreeConstruct.Scene) => {
+      item.cameraInit._LOOKCENTER = _LOOKCENTER;
+      item.camera = this.camera;
+      return item;
+    });
+    this.sceneBox.cameraInit._LOOKCENTER = _LOOKCENTER;
+    this._SET_CAMERA_CENTER();
+  }
+  setCameraUp(up: PositionType) {
+    this.scenes.map((item: ThreeConstruct.Scene) => {
+      item.cameraInit.UP = up;
+    });
+    this.sceneBox.cameraInit.UP = up;
+    this._SET_CAMERA_CENTER();
+  }
+  _Test() {
+    function notify(num: number, finshedFiles: LoaderType[], files: LoaderType[]) {
+      if (num < 1) {
+        _bus.$emit(_CONSTANT_.ONPROGRESS, num);
+      } else {
+        _bus.$emit(_CONSTANT_.LOADED, num);
+      }
+      // console.log(num, finshedFiles, files);
+    }
+    const collecter = new Collecter(notify, 'byte');
+    const Loader = (fn: Function) => {
+      let loader: any = {}; //模拟文件对象
+      loader._DEP_KEY = { _IS_DEPED: false, _IS_FINISHED: false, _SIZE: 0, _CURRENT: 0 };
+      //模拟加载时间
+      // let time = Math.random() * 10000;
+      // console.log(time);
+      // //模拟文件加载成功回调
+      // setTimeout(() => {
+      //   loader._DEP_KEY._IS_FINISHED = true;
+      //   fn();
+      // }, time);
+      //   //模拟文件加载中回调
+      loader._DEP_KEY._SIZE = Math.random() * 50;
+      loader._DEP_KEY._CURRENT = 0;
+      let timer = setInterval(() => {
+        if (loader._DEP_KEY._CURRENT < loader._DEP_KEY._SIZE) {
+          loader._DEP_KEY._CURRENT += Math.random() * 10;
+          fn();
+        } else {
+          loader._DEP_KEY._CURRENT = loader._DEP_KEY._SIZE;
+          clearInterval(timer);
+        }
+      }, 500);
+      return loader;
+    };
+    collecter.collect(Loader(collecter.watcher));
+    collecter.collect(Loader(collecter.watcher));
+    collecter.collect(Loader(collecter.watcher));
+    collecter.collect(Loader(collecter.watcher));
+  }
+  _POPUP_ChANGE() {
     this.control.addEventListener(_CONSTANT_.EVENTCHANGE, () => {
       Thes.popupList.map(item => {
         if (item.th.cid === this.sceneBox.cid) {
@@ -249,5 +342,46 @@ export class Thes implements ThesContainer {
   }
   clear(): void {
     this.opt.el.innerHTML = '';
+  }
+  _FILTERPOP() {
+    Thes.popupList.map((item: PopupContainer) => {
+      if (item.th.cid === this.sceneBox.cid) {
+        item.show();
+      } else if (item.th.cid !== this.sceneBox.cid) {
+        item.hide();
+      }
+    });
+  }
+  _SET_CAMERA_CENTER() {
+    this.camera.lookAt(
+      this.sceneBox.cameraInit?._LOOKCENTER?.x || 0,
+      this.sceneBox.cameraInit?._LOOKCENTER?.y || 0,
+      this.sceneBox.cameraInit?._LOOKCENTER?.z || 0
+    );
+    this.control.target = CreateThree.vector3([
+      this.sceneBox.cameraInit?._LOOKCENTER?.x || 0,
+      this.sceneBox.cameraInit?._LOOKCENTER?.y || 0,
+      this.sceneBox.cameraInit?._LOOKCENTER?.z || 0,
+    ]);
+    this.camera.up = CreateThree.vector3([
+      this.sceneBox.cameraInit?.UP?.x || 0,
+      this.sceneBox.cameraInit?.UP?.y || 1,
+      this.sceneBox.cameraInit?.UP?.z || 0,
+    ]);
+  }
+  _INIT() {
+    this.scenes.map((scene: SceneBoxType) => {
+      scene.camera = this.camera;
+    });
+    _bus.$on(_CONSTANT_BUS_.UPDATE_SCENE, () => {
+      this.sceneBox = this.scenes.find(
+        (sceneBox: SceneBoxType) => sceneBox.cid == this.sceneBox.cid
+      );
+      this._SET_CAMERA_CENTER();
+    });
+    _bus.$on(_CONSTANT_BUS_.ADD_POPUP, (th: ThesContainer & SceneBoxType) => {
+      this._FILTERPOP();
+    });
+    _bus.$emit(_CONSTANT_.LOADED);
   }
 }

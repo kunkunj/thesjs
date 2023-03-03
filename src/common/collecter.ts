@@ -5,48 +5,102 @@ interface CollecterContainer {
   watcher(): void;
   collect(loader: LoaderType): void;
 }
-
+/**
+ * 依赖收集
+ */
 export class Collecter implements CollecterContainer {
   deps: LoaderType[] = [];
   notify: Function;
-  constructor(notify: Function) {
+  watchType: 'count' | 'byte';
+  constructor(notify: Function, type: 'count' | 'byte') {
+    this.watcher = this.watcher.bind(this);
     this.notify = notify;
+    this.watchType = type || 'count';
   }
   collect(loader: LoaderType): void {
     loader._DEP_KEY._IS_DEPED = true;
     this.deps.push(loader);
   }
   watcher(): void {
-    const finshedFiles = this.deps.filter((loader: LoaderType) => {
-      loader._DEP_KEY._IS_FINISHED == true;
-    });
-    const files = this.deps.filter((loader: LoaderType) => {
-      loader._DEP_KEY._IS_DEPED == true;
-    });
-    const num = (finshedFiles.length / files.length).toFixed(2);
-    this.notify(num, finshedFiles, files);
+    const finshedFiles = this.deps.filter(
+      (loader: LoaderType) => loader._DEP_KEY._IS_FINISHED == true
+    );
+    const files = this.deps.filter((loader: LoaderType) => loader._DEP_KEY._IS_DEPED == true);
+    if (this.watchType == 'count') {
+      const num = (finshedFiles.length / files.length).toFixed(2);
+      this.notify(num, finshedFiles, files);
+    } else if (this.watchType == 'byte') {
+      const totalNum = this.deps.reduce(
+        (total: number, loader: LoaderType) => loader._DEP_KEY._SIZE + total,
+        0
+      );
+      const curentNum = this.deps.reduce(
+        (total: number, loader: LoaderType) => loader._DEP_KEY._CURRENT + total,
+        0
+      );
+      const num = (curentNum / totalNum).toFixed(2);
+      this.notify(num, finshedFiles, files);
+    }
   }
 }
 
 // Example
-function notify(num: number, finshedFiles: LoaderType[], files: LoaderType[]) {
-  console.log(num);
-}
-const collecter = new Collecter(notify);
-const Loader = (fn: Function) => {
-  let loader: any = {}; //模拟文件对象
-  loader._DEP_KEY = { _IS_DEPED: false, _IS_FINISHED: false };
-  //模拟加载时间
-  let time = Math.random() * 10000;
-  console.log(time);
-  //模拟文件加载成功回调
-  setTimeout(() => {
-    loader._DEP_KEY._IS_FINISHED = true;
-    fn();
-  }, time);
-  return loader;
-};
-collecter.collect(Loader(collecter.watcher));
-collecter.collect(Loader(collecter.watcher));
-collecter.collect(Loader(collecter.watcher));
-collecter.collect(Loader(collecter.watcher));
+
+/**
+ * 发布订阅
+ */
+
+// interface _CollecterContainer {
+//   queues: Record<string, Function[]>;
+//   $on(name: string, cb: Function): void;
+//   $emit(name: string, text?: any): void;
+// }
+// export class _Collecter implements _CollecterContainer {
+//   queues: Record<string, Array<Function>> = {};
+//   $on(name: string, cb: Function) {
+//     if (!this.queues[name]) {
+//       this.queues[name] = [cb];
+//     } else {
+//       this.queues[name].push(cb);
+//     }
+//   }
+//   $emit(name: string, text?: any) {
+//     const fnList: Function[] | undefined = this.queues[name];
+//     fnList &&
+//       fnList.map((fn: Function) => {
+//         fn(text);
+//       });
+//   }
+// }
+// //Example
+// function notify(num: number) {
+//   console.log(num);
+// }
+// const _collecter = new _Collecter();
+// const Loader = (fn: Function) => {
+//   let loader: any = {}; //模拟文件对象
+//   loader._DEP_KEY = { _IS_DEPED: false, _IS_FINISHED: false };
+//   //模拟加载时间
+//   let time = Math.random() * 10000;
+//   console.log(time);
+//   //模拟文件加载成功回调
+//   setTimeout(() => {
+//     loader._DEP_KEY._IS_FINISHED = true;
+//     _collecter.$emit('finish');
+//     fn();
+//   }, time);
+//   //模拟文件加载中回调
+//   let total = Math.random() * 50;
+//   let progress = 0;
+//   setTimeout(() => {
+//     progress += Math.random() * 10;
+//     _collecter.$emit('load',progress);
+//   }, 500);
+//   return loader;
+// };
+// _collecter.$on('finish', (text?: any) => {
+//   // notify()
+// });
+// _collecter.$on('load', (text?: any) => {
+//   // notify()
+// });
