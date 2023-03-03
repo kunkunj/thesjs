@@ -2,7 +2,7 @@ import CreateThree from '../common/three';
 import CreateLine from './converter/line';
 import { CameraType, optionsType, PointType, AmbientType } from '../types/options';
 import { defaultCamera, defaultLight, defaultAmbient } from '../data/option';
-import { ThesContainer, SceneBoxType, PositionType } from '../types/thesFull';
+import { ThesContainer, SceneBoxType, PositionType, LoaderTypeOption } from '../types/thesFull';
 import {
   GeometryOptionType,
   GeometryContainer,
@@ -12,7 +12,7 @@ import {
   LineContainer,
   LoaderType,
 } from '../types/geometry';
-import { setId, threeToScreen, throwError } from '../common/utils';
+import { setId, threeToScreen, throwError, _createLoaderKey } from '../common/utils';
 import OptionFilter from '../common/optionFilter';
 import CreateCamera from './converter/camera';
 import CreateRenderer from './converter/renderer';
@@ -31,9 +31,20 @@ import { PopupContainer, PopupType } from '../types/popup';
 import { Popup } from './popup';
 import { _CONSTANT_, _CONSTANT_BUS_, _Events } from '../common/constant';
 import { _bus } from '../common/bus';
-import { Collecter } from '../common/collecter';
-// import thesParent from '../common/thesParent';
-
+import { Collecter, CollecterContainer } from '../common/collecter';
+let loaded = false;
+function notify(num: number, finshedFiles: LoaderType[], files: LoaderType[]) {
+  if (num < 1) {
+    _bus.$emit(_CONSTANT_.ONPROGRESS, num);
+  } else {
+    if (loaded) {
+      return;
+    }
+    _bus.$emit(_CONSTANT_.LOADED, num);
+  }
+  console.log(num, finshedFiles, files);
+}
+export let _collecter: CollecterContainer;
 type EventsType = {
   [index in _Events]: _CONSTANT_.EVENTON | _CONSTANT_.EVENTOFF;
 };
@@ -66,7 +77,13 @@ export class Thes implements ThesContainer {
     [_CONSTANT_.LOADED]: _CONSTANT_.EVENTOFF,
     [_CONSTANT_.ONPROGRESS]: _CONSTANT_.EVENTOFF,
   };
+  _load: LoaderTypeOption;
   constructor(opt: optionsType) {
+    _collecter = new Collecter(notify, opt.loadType || 'count');
+    this._load = _createLoaderKey({});
+    this._load._DEP_KEY._SIZE = 50;
+    this._load._DEP_KEY._CURRENT = 0;
+    _collecter.collect(this._INIT(_collecter.watcher));
     //赋值id
     // this.id =
     //格式化数据
@@ -287,45 +304,41 @@ export class Thes implements ThesContainer {
     this.sceneBox.cameraInit.UP = up;
     this._SET_CAMERA_CENTER();
   }
+  
   _Test() {
-    function notify(num: number, finshedFiles: LoaderType[], files: LoaderType[]) {
-      if (num < 1) {
-        _bus.$emit(_CONSTANT_.ONPROGRESS, num);
-      } else {
-        _bus.$emit(_CONSTANT_.LOADED, num);
-      }
-      // console.log(num, finshedFiles, files);
-    }
-    const collecter = new Collecter(notify, 'byte');
     const Loader = (fn: Function) => {
-      let loader: any = {}; //模拟文件对象
-      loader._DEP_KEY = { _IS_DEPED: false, _IS_FINISHED: false, _SIZE: 0, _CURRENT: 0 };
-      //模拟加载时间
-      // let time = Math.random() * 10000;
-      // console.log(time);
-      // //模拟文件加载成功回调
-      // setTimeout(() => {
-      //   loader._DEP_KEY._IS_FINISHED = true;
-      //   fn();
-      // }, time);
-      //   //模拟文件加载中回调
-      loader._DEP_KEY._SIZE = Math.random() * 50;
-      loader._DEP_KEY._CURRENT = 0;
-      let timer = setInterval(() => {
-        if (loader._DEP_KEY._CURRENT < loader._DEP_KEY._SIZE) {
-          loader._DEP_KEY._CURRENT += Math.random() * 10;
+      let loader: any = _createLoaderKey({});
+      if (_collecter.watchType == 'count') {
+        let time = Math.random() * 10000;
+        setTimeout(() => {
+          loader._DEP_KEY._IS_FINISHED = true;
           fn();
-        } else {
-          loader._DEP_KEY._CURRENT = loader._DEP_KEY._SIZE;
-          clearInterval(timer);
-        }
-      }, 500);
+        }, time);
+      }
+      if (_collecter.watchType == 'byte') {
+        loader._DEP_KEY._SIZE = Math.random() * 50;
+        loader._DEP_KEY._CURRENT = 0;
+        let timer = setInterval(() => {
+          let add = Math.random() * 10;
+          if (loader._DEP_KEY._CURRENT < loader._DEP_KEY._SIZE) {
+            if (loader._DEP_KEY._CURRENT + add > loader._DEP_KEY._SIZE) {
+              loader._DEP_KEY._CURRENT = loader._DEP_KEY._SIZE;
+            } else {
+              loader._DEP_KEY._CURRENT += add
+            }
+            fn();
+          } else {
+            loader._DEP_KEY._CURRENT = loader._DEP_KEY._SIZE;
+            clearInterval(timer);
+          }
+        }, 500);
+      }
       return loader;
     };
-    collecter.collect(Loader(collecter.watcher));
-    collecter.collect(Loader(collecter.watcher));
-    collecter.collect(Loader(collecter.watcher));
-    collecter.collect(Loader(collecter.watcher));
+    _collecter.collect(Loader(_collecter.watcher));
+    _collecter.collect(Loader(_collecter.watcher));
+    _collecter.collect(Loader(_collecter.watcher));
+    _collecter.collect(Loader(_collecter.watcher));
   }
   _POPUP_ChANGE() {
     this.control.addEventListener(_CONSTANT_.EVENTCHANGE, () => {
@@ -369,7 +382,7 @@ export class Thes implements ThesContainer {
       this.sceneBox.cameraInit?.UP?.z || 0,
     ]);
   }
-  _INIT() {
+  _INIT(fn?: Function) {
     this.scenes.map((scene: SceneBoxType) => {
       scene.camera = this.camera;
     });
@@ -383,5 +396,9 @@ export class Thes implements ThesContainer {
       this._FILTERPOP();
     });
     _bus.$emit(_CONSTANT_.LOADED);
+    this._load._DEP_KEY._CURRENT = 50;
+    this._load._DEP_KEY._IS_FINISHED = true;
+    fn?.call(null);
+    return this._load;
   }
 }

@@ -1,7 +1,12 @@
+
+import { _bus } from './bus';
+import { _CONSTANT_ } from './constant';
+
 type LoaderType = any;
-interface CollecterContainer {
+export interface CollecterContainer {
   deps: LoaderType[];
   notify: Function;
+  watchType: 'count' | 'byte';
   watcher(): void;
   collect(loader: LoaderType): void;
 }
@@ -26,10 +31,10 @@ export class Collecter implements CollecterContainer {
       (loader: LoaderType) => loader._DEP_KEY._IS_FINISHED == true
     );
     const files = this.deps.filter((loader: LoaderType) => loader._DEP_KEY._IS_DEPED == true);
-    if (this.watchType == 'count') {
+    if (this.watchType == _CONSTANT_.WATCHCOUNT) {
       const num = (finshedFiles.length / files.length).toFixed(2);
       this.notify(num, finshedFiles, files);
-    } else if (this.watchType == 'byte') {
+    } else if (this.watchType == _CONSTANT_.WATCHBYTE) {
       const totalNum = this.deps.reduce(
         (total: number, loader: LoaderType) => loader._DEP_KEY._SIZE + total,
         0
@@ -39,6 +44,7 @@ export class Collecter implements CollecterContainer {
         0
       );
       const num = (curentNum / totalNum).toFixed(2);
+      console.log(totalNum,curentNum,num)
       this.notify(num, finshedFiles, files);
     }
   }

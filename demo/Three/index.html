@@ -33,8 +33,14 @@
         },
       });
       th.add(geo);
-      th._Test()
-      console.log(th)
+      th._Test();
+      console.log(th);
+      th.on('progress', num => {
+        console.log(num, '加载中');
+      });
+      th.on('loaded', () => {
+        console.log('加载完毕');
+      });
     </script>
   </body>
 </html>

@@ -33,3 +33,11 @@ export type PositionType = {
   y: number;
   z: number;
 };
+export type LoaderTypeOption = {
+  _DEP_KEY: {
+    _IS_DEPED: boolean;
+    _IS_FINISHED: boolean;
+    _SIZE: number;
+    _CURRENT: number;
+  };
+};

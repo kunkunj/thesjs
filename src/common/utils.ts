@@ -1,4 +1,5 @@
 import idStorage from '../common/map';
+import { LoaderTypeOption } from '../types/thesFull';
 import CreateThree from './three';
 //16进制转换
 export function octalReplace(str: string): string {
@@ -28,7 +29,7 @@ type ScreenPosition = { left: number; top: number };
 export function threeToScreen(
   position: [number, number, number],
   camera: ThreeConstruct.Camera,
-  dom:HTMLElement
+  dom: HTMLElement
 ): ScreenPosition {
   var worldVector = CreateThree.vector3(position);
   var standardVector = worldVector.project(camera); //世界坐标转标准设备坐标
@@ -40,4 +41,8 @@ export function threeToScreen(
     left: x,
     top: y,
   };
+}
+export function _createLoaderKey(loader: any): LoaderTypeOption {
+  loader._DEP_KEY = { _IS_DEPED: false, _IS_FINISHED: false, _SIZE: 0, _CURRENT: 0 };
+  return loader;
 }

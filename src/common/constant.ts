@@ -32,6 +32,8 @@ export enum _CONSTANT_ {
   POPUPIDNAME = 'popup',
   LOADED = 'loaded',
   ONPROGRESS = 'progress',
+  WATCHBYTE = 'byte',
+  WATCHCOUNT = 'count'
 }
 
 /**
