@@ -1,7 +1,8 @@
-
+import { ContentType } from '../types/geometry';
 import { _bus } from './bus';
 import { _CONSTANT_ } from './constant';
-
+import { _createLoaderKey,throwError } from './utils';
+import { cloneDeep } from 'loadsh'
 type LoaderType = any;
 export interface CollecterContainer {
   deps: LoaderType[];
@@ -22,9 +23,23 @@ export class Collecter implements CollecterContainer {
     this.notify = notify;
     this.watchType = type || 'count';
   }
-  collect(loader: LoaderType): void {
-    loader._DEP_KEY._IS_DEPED = true;
-    this.deps.push(loader);
+  collect(loader: LoaderType): ContentType {
+    if (typeof loader == 'undefined') {
+      loader = _createLoaderKey({});
+    }
+    if (typeof loader == 'object' && !loader['_DEP_KEY']) {
+      loader = _createLoaderKey(loader);
+    }
+    if (typeof loader == 'function') {
+      return this.collect(loader.call(null));;
+    }
+    try {
+      loader._DEP_KEY._IS_DEPED = true;
+      this.deps.push(loader);
+    } catch (error) {
+      throwError('loader类型只能是object和function')
+    }
+    return loader
   }
   watcher(): void {
     const finshedFiles = this.deps.filter(
@@ -36,15 +51,15 @@ export class Collecter implements CollecterContainer {
       this.notify(num, finshedFiles, files);
     } else if (this.watchType == _CONSTANT_.WATCHBYTE) {
       const totalNum = this.deps.reduce(
-        (total: number, loader: LoaderType) => loader._DEP_KEY._SIZE + total,
+        (total: number, loader: LoaderType) => (loader._DEP_KEY._SIZE || loader._DEP_KEY._CURRENT) + total,
         0
       );
       const curentNum = this.deps.reduce(
         (total: number, loader: LoaderType) => loader._DEP_KEY._CURRENT + total,
         0
       );
-      const num = (curentNum / totalNum).toFixed(2);
-      console.log(totalNum,curentNum,num)
+      const num = (curentNum / totalNum);
+      // console.log(curentNum , totalNum,num)
       this.notify(num, finshedFiles, files);
     }
   }

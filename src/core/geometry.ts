@@ -6,26 +6,32 @@ import {
   TextGeometryType,
 } from '../types/geometry';
 import CreateThree from '../common/three';
-import { setId, extendParent, throwError } from '../common/utils';
+import { setId, extendParent, throwError, _createLoaderKey } from '../common/utils';
 import { geometryInspect } from './inspect/inspect';
 import CreateGeometry from './converter/geometry';
 import Tween from '@tweenjs/tween.js';
 import { isArray, isObject, isString } from 'loadsh';
 import { _CONSTANT_ } from '../common/constant';
-/// 
+import { _collecter } from './thes';
+import { LoaderTypeOption } from '../types/thesFull';
+///
 export default class Geometry implements GeometryContainer {
   id = -1;
   opt: GeometryOptionType | undefined;
   content: ContentType;
   tween: any;
+  _load: LoaderTypeOption;
   static props = [];
   constructor(opt: GeometryOptionType, geo?: ThreeConstruct.Geometry) {
+    this._load = _createLoaderKey({});
     setId(_CONSTANT_.GEOMETRYIDNAME, this);
     this.opt = opt;
     let geometry: ContentType;
     if (typeof geo == 'undefined') {
       geometryInspect(opt);
-      geometry = CreateGeometry(opt);
+      geometry = _collecter.collect(CreateGeometry(opt, _collecter.watcher)) as any;
+      geometry._DEP_KEY._CURRENT = 0;
+      geometry._DEP_KEY._SIZE = 50;
     } else {
       geometry = geo;
     }
@@ -68,14 +74,14 @@ export default class Geometry implements GeometryContainer {
   rotateY(...arg: any): void {
     this.content.geo.rotateY(...arg);
   }
-  center(): void{
+  center(): void {
     this.content.geo.center();
   }
   rotateZ(...arg: any): void {
     this.content.geo.rotateZ(...arg);
   }
   delete() {
-    this.content.geo.dispose()
+    this.content.geo.dispose();
     this.content.thing.removeFromParent();
   }
 }

@@ -156,6 +156,7 @@ export type AmbientType = {
  */
 export type optionsType = {
   el: HTMLElement;
+  loading?: boolean;
   loadType?: _CONSTANT_.WATCHBYTE | _CONSTANT_.WATCHCOUNT;
   camera: CameraType;
   width: number;

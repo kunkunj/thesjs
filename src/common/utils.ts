@@ -1,6 +1,9 @@
 import idStorage from '../common/map';
+import { ContentType } from '../types/geometry';
 import { LoaderTypeOption } from '../types/thesFull';
 import CreateThree from './three';
+import { TsxType } from './tsx';
+import { cloneDeep } from 'loadsh'
 //16进制转换
 export function octalReplace(str: string): string {
   return str.replace('#', '0x');
@@ -43,6 +46,41 @@ export function threeToScreen(
   };
 }
 export function _createLoaderKey(loader: any): LoaderTypeOption {
-  loader._DEP_KEY = { _IS_DEPED: false, _IS_FINISHED: false, _SIZE: 0, _CURRENT: 0 };
+  loader._DEP_KEY = cloneDeep({ _IS_DEPED: false, _IS_FINISHED: false, _SIZE: 0, _CURRENT: 0 });
   return loader;
+}
+export function loadFinish(_load: ContentType, fn: Function) {
+  setTimeout(() => {
+    _load._DEP_KEY._CURRENT = 50;
+    _load._DEP_KEY._IS_FINISHED = true;
+    fn.call(null);
+  }, 0);
+}
+//等待异步执行
+// export function setPromise(pro: Promise<any>) {
+//   try {
+//     throw pro
+//   } catch (error) {
+//     pro.then((res) => {
+
+//     })
+//   }
+// }
+export function compiler(tsx: TsxType) {
+  let dom: any = null;
+  dom = document.createElement(tsx['tag']);
+  for (const key1 in tsx['attrs']) {
+    if (!['tag', 'attrs', 'children', 'content'].includes(key1)) {
+      dom.setAttribute(key1, tsx['attrs'][key1]);
+    }
+  }
+  if (tsx['content']) {
+    dom.innerHTML = tsx['content'];
+  }
+  if (tsx['children'] && tsx['children'].length) {
+    tsx['children'].map((item: TsxType) => {
+      dom.appendChild(compiler(item));
+    });
+  }
+  return dom;
 }

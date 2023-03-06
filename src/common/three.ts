@@ -4,6 +4,8 @@ import { OrbitControls } from '../controls/OrbitControls.js';
 import { throwError } from './utils';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { LoaderTypeOption } from '../types/thesFull.js';
+import { _collecter } from '../core/thes.js';
 
 //场景
 const createScene = () => new THREE.Scene();
@@ -74,11 +76,29 @@ const createBasicMaterial = (...arg: any) => new THREE.LineBasicMaterial(...arg)
 //虚线
 const createDashedMaterial = (...arg: any) => new THREE.LineDashedMaterial(...arg);
 //字体
-const createFont = (url: string) => {
+const createFont = (url: string, loaderText: LoaderTypeOption, fn: Function) => {
   return new Promise((resolve: Function) => {
-    new FontLoader().load(url, (font: ThreeConstruct.Font) => {
-      resolve(font);
-    });
+    new FontLoader().load(
+      url,
+      (font: ThreeConstruct.Font) => {
+        if (_collecter.watchType == 'count') {
+          loaderText._DEP_KEY._IS_FINISHED = true;
+          fn();
+        } else {
+          loaderText._DEP_KEY._SIZE = loaderText._DEP_KEY._CURRENT;
+          fn()
+        }
+        resolve(font);
+      },
+      (xhr: any) => {
+        if (_collecter.watchType == 'byte') {
+          loaderText._DEP_KEY._CURRENT = xhr.loaded;
+          loaderText._DEP_KEY._SIZE = xhr.total || loaderText._DEP_KEY._CURRENT + 100;
+          fn();
+        }
+        // console.log(xhr)
+      }
+    );
   });
 };
 //基础材质
@@ -102,8 +122,8 @@ const getModelList = (event: any, camera: any, scene: any) => {
   return intersects.map((item: any) => item.object);
 };
 const vector3 = (position: [number, number, number]) => {
-  return new THREE.Vector3(...position)
-}
+  return new THREE.Vector3(...position);
+};
 export default {
   THREE,
   createScene,
@@ -139,5 +159,5 @@ export default {
   createBasicMaterial,
   createDashedMaterial,
   createLine,
-  vector3
+  vector3,
 };

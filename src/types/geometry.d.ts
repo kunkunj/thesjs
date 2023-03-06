@@ -1,6 +1,7 @@
 /**---------------------------------材质相关--------------------------------------- */
 
 import { _CONSTANT_GEOMETRY_ } from '../common/constant';
+import { LoaderTypeOption } from './thesFull';
 
 /**
  * MeshBasicMaterial -- 基础网格材质，不受光照影响的材质
@@ -260,6 +261,7 @@ export type ContentType = {
   thing: ThreeConstruct.Mesh | ThreeConstruct.Line;
   geo: ThreeConstruct.Geometry;
   mat: ThreeConstruct.Material | ThreeConstruct.Material[];
+  _DEP_KEY?:LoaderTypeOption._DEP_KEY
 };
 export type LineContainer = {
   id: number;

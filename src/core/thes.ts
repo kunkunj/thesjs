@@ -12,7 +12,7 @@ import {
   LineContainer,
   LoaderType,
 } from '../types/geometry';
-import { setId, threeToScreen, throwError, _createLoaderKey } from '../common/utils';
+import { compiler, setId, threeToScreen, throwError, _createLoaderKey } from '../common/utils';
 import OptionFilter from '../common/optionFilter';
 import CreateCamera from './converter/camera';
 import CreateRenderer from './converter/renderer';
@@ -32,19 +32,13 @@ import { Popup } from './popup';
 import { _CONSTANT_, _CONSTANT_BUS_, _Events } from '../common/constant';
 import { _bus } from '../common/bus';
 import { Collecter, CollecterContainer } from '../common/collecter';
-let loaded = false;
-function notify(num: number, finshedFiles: LoaderType[], files: LoaderType[]) {
-  if (num < 1) {
-    _bus.$emit(_CONSTANT_.ONPROGRESS, num);
-  } else {
-    if (loaded) {
-      return;
-    }
-    _bus.$emit(_CONSTANT_.LOADED, num);
-  }
-  console.log(num, finshedFiles, files);
-}
+import { toastHook } from '../common/hooks';
+
+let loading = true;
+const { notify } = toastHook(loading);
+
 export let _collecter: CollecterContainer;
+
 type EventsType = {
   [index in _Events]: _CONSTANT_.EVENTON | _CONSTANT_.EVENTOFF;
 };
@@ -79,11 +73,12 @@ export class Thes implements ThesContainer {
   };
   _load: LoaderTypeOption;
   constructor(opt: optionsType) {
-    _collecter = new Collecter(notify, opt.loadType || 'count');
+    loading = opt.loading || true;
+    _collecter = new Collecter(notify, opt.loadType || 'byte');
     this._load = _createLoaderKey({});
-    this._load._DEP_KEY._SIZE = 50;
+    _collecter.collect(this._INIT(_collecter.watcher, true));
     this._load._DEP_KEY._CURRENT = 0;
-    _collecter.collect(this._INIT(_collecter.watcher));
+    this._load._DEP_KEY._SIZE = 50;
     //赋值id
     // this.id =
     //格式化数据
@@ -121,7 +116,7 @@ export class Thes implements ThesContainer {
     this.control.enableDamping = true;
     this.control.dampingFactor = 0.1;
     this._POPUP_ChANGE();
-    this._INIT();
+    this._INIT(_collecter.watcher);
   }
   static createGeometry(geometry: GeometryOptionType) {
     return new CreateGeometry(geometry);
@@ -131,7 +126,9 @@ export class Thes implements ThesContainer {
   }
   //文本
   static async createText(opt: TextGeometryType): Promise<GeometryContainer> {
-    const font = await CreateThree.createFont(opt?.style?.font);
+    let loaderText = _createLoaderKey({});
+    _collecter.collect(loaderText);
+    const font = await CreateThree.createFont(opt?.style?.font, loaderText, _collecter.watcher);
     const mat = createMaFn(opt);
     const geo = CreateThree.createTextGeometry(opt?.content, {
       ...opt?.style,
@@ -167,7 +164,9 @@ export class Thes implements ThesContainer {
   //场景
   createScene(opt: optionsType) {
     let aopt = OptionFilter(opt);
-    const scene = CreateScene(aopt);
+    const scene = _collecter.collect(CreateScene(aopt, _collecter.watcher)) as any;
+    scene._DEP_KEY._CURRENT = 0;
+    scene._DEP_KEY._SIZE = 50;
     CreateLight(aopt.lights as PointType, scene);
     CreateAmbient(aopt.ambientLight, scene);
     const sceneBox = new SceneBox(scene);
@@ -304,7 +303,7 @@ export class Thes implements ThesContainer {
     this.sceneBox.cameraInit.UP = up;
     this._SET_CAMERA_CENTER();
   }
-  
+
   _Test() {
     const Loader = (fn: Function) => {
       let loader: any = _createLoaderKey({});
@@ -324,7 +323,7 @@ export class Thes implements ThesContainer {
             if (loader._DEP_KEY._CURRENT + add > loader._DEP_KEY._SIZE) {
               loader._DEP_KEY._CURRENT = loader._DEP_KEY._SIZE;
             } else {
-              loader._DEP_KEY._CURRENT += add
+              loader._DEP_KEY._CURRENT += add;
             }
             fn();
           } else {
@@ -382,7 +381,7 @@ export class Thes implements ThesContainer {
       this.sceneBox.cameraInit?.UP?.z || 0,
     ]);
   }
-  _INIT(fn?: Function) {
+  _INIT(fn?: Function, isCollected: boolean = false) {
     this.scenes.map((scene: SceneBoxType) => {
       scene.camera = this.camera;
     });
@@ -396,9 +395,11 @@ export class Thes implements ThesContainer {
       this._FILTERPOP();
     });
     _bus.$emit(_CONSTANT_.LOADED);
-    this._load._DEP_KEY._CURRENT = 50;
-    this._load._DEP_KEY._IS_FINISHED = true;
-    fn?.call(null);
+    if (!isCollected) {
+      this._load._DEP_KEY._CURRENT = 50;
+      this._load._DEP_KEY._IS_FINISHED = true;
+      fn?.call(null);
+    }
     return this._load;
   }
 }
