@@ -13,6 +13,7 @@ export interface CollecterContainer {
 }
 /**
  * 依赖收集
+ * 场景模型懒加载、预加载----------------后续实现，，留个标记
  */
 export class Collecter implements CollecterContainer {
   deps: LoaderType[] = [];

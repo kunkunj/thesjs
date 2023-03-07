@@ -24,7 +24,12 @@ export default (opt: LineGeometryType): ContentType => {
       linejoin: opt.linejoin || 'round',
     });
   }
-  const geo = CreateThree.createLineGeometry(opt.points);
+  let geo: ThreeConstruct.Geometry
+  if (opt.isCover) {
+    geo = CreateThree.createCatmullRomCurve3(opt.points);
+  } else {
+    geo = CreateThree.createLineGeometry(opt.points);
+  }
   return {
     mat,
     geo,

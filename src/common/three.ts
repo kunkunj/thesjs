@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 import { OrbitControls } from '../controls/OrbitControls.js';
+import { DragControls } from '../controls/DragControls.js';
 import { throwError } from './utils';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
@@ -38,6 +39,7 @@ const createRectAreaLight = (...arg: any) => new THREE.RectAreaLight(...arg);
 const createAmbientLight = (...arg: any) => new THREE.AmbientLight(...arg);
 //控件对象
 const createOrbitControls = (...arg: any) => new OrbitControls(...arg);
+const createDragControls = (...arg: any) => new DragControls(...arg);
 //创建组
 const createGroup = () => new THREE.Group();
 const createMa = (scene: any) => {
@@ -71,6 +73,13 @@ const createLineGeometry = (...arg: any) => {
     new Array(...arg)[0].map((item: [number, number, number]) => new THREE.Vector3(...item))
   );
 };
+//曲角直线
+const createCatmullRomCurve3 = (...arg: any) => {
+  const curve = new THREE.CatmullRomCurve3(
+    new Array(...arg)[0].map((item: [number, number, number]) => new THREE.Vector3(...item))
+  );
+  return new THREE.BufferGeometry().setFromPoints(curve.getPoints(100));
+};
 //实线
 const createBasicMaterial = (...arg: any) => new THREE.LineBasicMaterial(...arg);
 //虚线
@@ -86,7 +95,7 @@ const createFont = (url: string, loaderText: LoaderTypeOption, fn: Function) => 
           fn();
         } else {
           loaderText._DEP_KEY._SIZE = loaderText._DEP_KEY._CURRENT;
-          fn()
+          fn();
         }
         resolve(font);
       },
@@ -124,6 +133,12 @@ const getModelList = (event: any, camera: any, scene: any) => {
 const vector3 = (position: [number, number, number]) => {
   return new THREE.Vector3(...position);
 };
+const vector2 = (position: [number, number]) => {
+  return new THREE.Vector2(...position);
+};
+const createMatrix4 = () => {
+  return new THREE.Matrix4();
+};
 export default {
   THREE,
   createScene,
@@ -160,4 +175,8 @@ export default {
   createDashedMaterial,
   createLine,
   vector3,
+  createCatmullRomCurve3,
+  createMatrix4,
+  vector2,
+  createDragControls
 };

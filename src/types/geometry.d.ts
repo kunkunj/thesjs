@@ -81,6 +81,7 @@ export type DashedLine = {
  * 线条
  * point -- 点数组，[[x,y,z],[x,y,z]]
  * color -- 线颜色
+ * isCover -- 曲线连接
  * type -- 线类型 solid（实线）dashed（虚线）
  * linewidth -- 线宽
  * linecap -- 定义线两端的样式。可选值为 'butt', 'round' 和 'square'。
@@ -89,6 +90,7 @@ export type DashedLine = {
 export type LineGeometryType = {
   points: Array<[number, number, number]>;
   type: 'solid' | 'dashed';
+  isCover: boolean;
   color: ThreeConstruct.Color;
   linewidth?: number;
   linecap?: 'butt' | 'round' | 'square';
@@ -251,8 +253,11 @@ export type GeometryType = {
 export interface GeometryContainer {
   id: number;
   content: ContentType;
+  isDrag: boolean;
+  position: number[];
   opt: GeometryOptionType | undefined;
   setColor(color: ThreeConstruct.Color): void;
+  initDrag(camera: ThreeConstruct.Camera, renderer: ThreeConstruct.Renderer): void;
 }
 /**
  *
@@ -261,7 +266,7 @@ export type ContentType = {
   thing: ThreeConstruct.Mesh | ThreeConstruct.Line;
   geo: ThreeConstruct.Geometry;
   mat: ThreeConstruct.Material | ThreeConstruct.Material[];
-  _DEP_KEY?:LoaderTypeOption._DEP_KEY
+  _DEP_KEY?: LoaderTypeOption._DEP_KEY;
 };
 export type LineContainer = {
   id: number;
@@ -278,7 +283,7 @@ export type LineContainer = {
  *  position -- 位置
  * }
  */
-export type LoaderList = 'obj' | 'mmd' | 'gltf'
+export type LoaderList = 'obj' | 'mmd' | 'gltf';
 export type LoaderOptionType = {
   color?: string;
   position?: [number, number, number];

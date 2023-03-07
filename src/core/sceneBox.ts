@@ -16,12 +16,14 @@ export default class SceneBox implements SceneBoxType {
       z: 0,
     },
   };
+  modelBox: GeometryContainer[] = [];
   camera: ThreeConstruct.Camera;
   constructor(scene: ThreeConstruct.Scene) {
     setId(_CONSTANT_.SCENEIDNAME, this);
     this.scene = scene;
   }
   add(me: GeometryContainer) {
+    this.modelBox.push(me);
     this.scene.add(me.content.thing);
   }
   //获取视图中心的地图坐标
@@ -30,13 +32,12 @@ export default class SceneBox implements SceneBoxType {
   }
   //切换视图中心
   setCenter(_LOOKCENTER: PositionType) {
-    console.log(1111,_LOOKCENTER)
     this.cameraInit._LOOKCENTER = _LOOKCENTER;
-    _bus.$emit(_CONSTANT_BUS_.UPDATE_SCENE)
+    _bus.$emit(_CONSTANT_BUS_.UPDATE_SCENE);
   }
   setCameraUp(up: PositionType) {
     this.cameraInit.UP = up;
-    _bus.$emit(_CONSTANT_BUS_.UPDATE_SCENE)
+    _bus.$emit(_CONSTANT_BUS_.UPDATE_SCENE);
   }
   // _SET_CAMERA_CENTER() {
   //   this.camera.lookAt(

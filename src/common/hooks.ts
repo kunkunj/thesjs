@@ -6,16 +6,6 @@ import { _CONSTANT_ } from './constant';
 import { LoadToast } from './tsx';
 import { compiler } from './utils';
 export function toastHook(loading: boolean) {
-  let styleList = [
-    initAnimate({
-      name: 'o',
-      process: [
-        { time: 'from', data: 'opacity:0.2' },
-        { time: 'to', data: 'opacity:1' },
-      ],
-    }),
-  ];
-  StyleContainer.createStyle(styleList);
   let loaded = false;
   let toasted = false;
   let loadpage: any;
@@ -31,6 +21,16 @@ export function toastHook(loading: boolean) {
       _bus.$emit(_CONSTANT_.LOADED, num);
     }
     if (loading && !loaded && !toasted) {
+      let styleList = [
+        initAnimate({
+          name: 'o',
+          process: [
+            { time: 'from', data: 'opacity:0.2' },
+            { time: 'to', data: 'opacity:1' },
+          ],
+        }),
+      ];
+      StyleContainer.createStyle(styleList);
       loadpage = compiler(LoadToast(0));
       console.log(loadpage);
       document.getElementsByTagName('body')[0].appendChild(loadpage);
@@ -45,3 +45,27 @@ export function toastHook(loading: boolean) {
     notify,
   };
 }
+
+export const mouseDownHook = (fn: Function) => {
+  const detail = (event: Event) => {
+    fn(event);
+  };
+  function add() {
+    window.addEventListener('mousedown', detail);
+  }
+  function remove() {
+    window.removeEventListener('mousedown', detail);
+  }
+  return {
+    add,
+    remove,
+  };
+};
+
+// export const keyDowmHook = (codeKey: string, fn: Function) => {
+//   document.onkeydown = e => {
+//     if (e.key == codeKey) {
+//       fn();
+//     }
+//   };
+// };

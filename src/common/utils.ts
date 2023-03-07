@@ -3,7 +3,7 @@ import { ContentType } from '../types/geometry';
 import { LoaderTypeOption } from '../types/thesFull';
 import CreateThree from './three';
 import { TsxType } from './tsx';
-import { cloneDeep } from 'loadsh'
+import { cloneDeep } from 'loadsh';
 //16进制转换
 export function octalReplace(str: string): string {
   return str.replace('#', '0x');
@@ -83,4 +83,24 @@ export function compiler(tsx: TsxType) {
     });
   }
   return dom;
+}
+export function throttle(fn: Function, time: number) {
+  let d0 = Date.now();
+  return function () {
+    if (Date.now() - d0 > time) {
+      fn.call(null);
+      d0 = Date.now();
+    }
+  };
+}
+export function convert2Dto3D(
+  x: number,
+  y: number,
+  camera: ThreeConstruct.Camera,
+  renderer: ThreeConstruct.Renderer
+) {
+  let pX = (x / renderer.domElement.clientWidth) * 2 - 1;
+  let pY = -(y / renderer.domElement.clientHeight) * 2 + 1;
+  let p = CreateThree.vector3([pX, pY, -1]).unproject(camera);
+  return CreateThree.vector2([p.x, p.y]);
 }

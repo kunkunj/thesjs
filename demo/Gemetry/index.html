@@ -114,6 +114,7 @@
           map: '../assets/mb.jpg',
         },
       });
+      geo.isDrag = true
       //彩色正方体
       let go1 = Thes.createGeometry({
         geometry: 'box',
@@ -202,7 +203,7 @@
         position: [-75, 0, 0],
       });
       const geo1 = Thes.createText({
-        content: '这里是文本',
+        content: '按住ctrl键，就可以拖动箱子啦',
         style: {
           font: '../fonts/STXinwei_Regular.json',
           size: 12,
@@ -219,9 +220,11 @@
         th.add(res, 1);
       });
       const line = Thes.createLine({
+        // isCover:true,
         points: [
-          [0, 30, 0],
-          [30, 30, 0],
+          [0, 40, 0],
+          [-40, 40, 0],
+          [-40, 80, 0],
         ],
         color: 'rgb(255,0,0)',
       });

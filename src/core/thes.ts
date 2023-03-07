@@ -12,7 +12,15 @@ import {
   LineContainer,
   LoaderType,
 } from '../types/geometry';
-import { compiler, setId, threeToScreen, throwError, _createLoaderKey } from '../common/utils';
+import {
+  compiler,
+  convert2Dto3D,
+  setId,
+  threeToScreen,
+  throttle,
+  throwError,
+  _createLoaderKey,
+} from '../common/utils';
 import OptionFilter from '../common/optionFilter';
 import CreateCamera from './converter/camera';
 import CreateRenderer from './converter/renderer';
@@ -32,10 +40,7 @@ import { Popup } from './popup';
 import { _CONSTANT_, _CONSTANT_BUS_, _Events } from '../common/constant';
 import { _bus } from '../common/bus';
 import { Collecter, CollecterContainer } from '../common/collecter';
-import { toastHook } from '../common/hooks';
-
-let loading = true;
-const { notify } = toastHook(loading);
+import { mouseDownHook, toastHook } from '../common/hooks';
 
 export let _collecter: CollecterContainer;
 
@@ -72,9 +77,13 @@ export class Thes implements ThesContainer {
     [_CONSTANT_.ONPROGRESS]: _CONSTANT_.EVENTOFF,
   };
   _load: LoaderTypeOption;
+  _IS_CTRL_FLAG: boolean = false;
+  _IS_DRAG_MODAL: any;
+  _THES_THING: any;
   constructor(opt: optionsType) {
-    loading = opt.loading || true;
-    _collecter = new Collecter(notify, opt.loadType || 'byte');
+    let loading: boolean = opt.loading || true;
+    const { notify } = toastHook(loading);
+    _collecter = new Collecter(notify, opt.loadType || 'count');
     this._load = _createLoaderKey({});
     _collecter.collect(this._INIT(_collecter.watcher, true));
     this._load._DEP_KEY._CURRENT = 0;
@@ -222,7 +231,9 @@ export class Thes implements ThesContainer {
       return false;
     }
     if (!sceneBoxId && this.scenes.length == 1) {
+      this.scenes[0].modelBox.push(me);
       this.scenes[0].scene.add(me.content.thing);
+      me.initDrag(this.camera, this.renderer);
       return true;
     }
     if (!sceneBoxId && this.scenes.length > 1) {
@@ -237,7 +248,9 @@ export class Thes implements ThesContainer {
         throwError('没查到该id的模型');
         return false;
       }
+      scene.modelBox.push(me);
       scene.scene.add(me.content.thing);
+      me.initDrag(this.camera, this.renderer);
       return true;
     }
     return false;
@@ -246,17 +259,13 @@ export class Thes implements ThesContainer {
     switch (type) {
       case _CONSTANT_.EVENTCLICK:
         if (this.events[type] == _CONSTANT_.EVENTOFF) {
-          this.opt.el.addEventListener(_CONSTANT_.EVENTCLICK, event =>
-            cb(
-              isArray(CreateThree.getModelList(event, this.camera, this.scene))
-                ? uniqBy(
-                    CreateThree.getModelList(event, this.camera, this.scene),
-                    _CONSTANT_.UNIQKEY
-                  )
-                : []
-            )
-          );
-          this.events[_CONSTANT_.EVENTCLICK] = _CONSTANT_.EVENTON;
+          this.opt.el.addEventListener(_CONSTANT_.EVENTCLICK, event => {
+            const ls = isArray(CreateThree.getModelList(event, this.camera, this.scene))
+              ? uniqBy(CreateThree.getModelList(event, this.camera, this.scene), _CONSTANT_.UNIQKEY)
+              : [];
+            this.events[_CONSTANT_.EVENTCLICK] = _CONSTANT_.EVENTON;
+            cb(ls);
+          });
         }
         break;
       case _CONSTANT_.LOADED:
@@ -354,6 +363,7 @@ export class Thes implements ThesContainer {
   }
   clear(): void {
     this.opt.el.innerHTML = '';
+    this.opt.el.removeEventListener('mousemove', () => {});
   }
   _FILTERPOP() {
     Thes.popupList.map((item: PopupContainer) => {
@@ -381,10 +391,32 @@ export class Thes implements ThesContainer {
       this.sceneBox.cameraInit?.UP?.z || 0,
     ]);
   }
+  _SET_CTRL_EVENT(type: boolean) {
+    this._IS_CTRL_FLAG = type;
+    if (type) {
+      this.control.enablePan = false;
+    } else {
+      this.control.enablePan = true;
+      this._IS_DRAG_MODAL = null;
+    }
+  }
   _INIT(fn?: Function, isCollected: boolean = false) {
     this.scenes.map((scene: SceneBoxType) => {
       scene.camera = this.camera;
     });
+    document.onkeydown = e => {
+      if (e.key == 'Control' && !this._IS_CTRL_FLAG) {
+        this._SET_CTRL_EVENT(true);
+        _bus.$emit('keyDowmControl', true);
+      }
+    };
+    document.onkeyup = e => {
+      if (e.key == 'Control' && this._IS_CTRL_FLAG) {
+        this._SET_CTRL_EVENT(false);
+        _bus.$emit('keyDowmControl', false);
+        this.renderer.domElement.style.cursor = 'default';
+      }
+    };
     _bus.$on(_CONSTANT_BUS_.UPDATE_SCENE, () => {
       this.sceneBox = this.scenes.find(
         (sceneBox: SceneBoxType) => sceneBox.cid == this.sceneBox.cid
