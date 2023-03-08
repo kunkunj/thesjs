@@ -6,26 +6,27 @@ namespace ThreeConstruct {
   //纹理贴图
   export type Texture = any;
   //雾
-  export type Fog = any
+  export type Fog = any;
   //材质
-  export type Material = any
+  export type Material = any;
   //场景
-  export type Scene = any
+  export type Scene = any;
   //相机
-  export type Camera = any
+  export type Camera = any;
   //构造器
-  export type Renderer = any
+  export type Renderer = any;
   //光源
-  export type Light = any
+  export type Light = any;
   //环境光
-  export type AmbientLight = any
+  export type AmbientLight = any;
   //控件
-  export type Controls = any
+  export type Controls = any;
   //组
-  export type Group = any
+  export type Group = any;
   //几何体
-  export type Geometry = any
-  export type Mesh = any
-  export type Font = any
-  export type Line = any
+  export type Geometry = any;
+  export type EdgesHelper = any;
+  export type Mesh = any;
+  export type Font = any;
+  export type Line = any;
 }

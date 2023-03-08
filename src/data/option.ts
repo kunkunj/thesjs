@@ -33,7 +33,7 @@ export const defaultOption: optionsType = {
   camera: defaultCamera,
   width: window?.innerWidth || 1000,
   height: window?.innerHeight || 1000,
-  lights: defaultLight,
-  ambientLight: defaultAmbient,
+  // lights: defaultLight,
+  // ambientLight: defaultAmbient,
   background: 'rgb(0,0,0)',
 };

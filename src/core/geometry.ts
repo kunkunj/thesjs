@@ -90,14 +90,74 @@ export default class Geometry implements GeometryContainer {
     throwError('color格式和Material库不匹配');
   }
   setPosition(position: [number, number, number]) {
-    this.content.thing.position.set(...position);
+    this.content.group.position.set(...position);
     this.position = position;
   }
-  moveTo(position: { x: number; y: number; z: number }, time?: number) {
+  moveTo(
+    position: {
+      x: number;
+      y: number;
+      z: number;
+      time?: number;
+      deg?: any;
+      direction: 'x' | 'y' | 'z';
+    } & {
+      x: number;
+      y: number;
+      z: number;
+      time?: number;
+      deg?: any;
+      direction: 'x' | 'y' | 'z';
+    }[]
+  ) {
     // this.content.geo.translate();
-    this.tween = new Tween.Tween(this.content.thing.position);
-    this.tween.to({ ...position }, time || 1000).start();
-    this.setPosition([position.x, position.y, position.z]);
+    console.log(position.x);
+    if (position.x) {
+      this.tween = new Tween.Tween(this.content.group.position);
+      this.tween
+        .to({ ...position },position?.time || 1000)
+        .start()
+        .onComplete(() => {
+          if (position.deg) {
+            if (position.direction == 'x') {
+              this.content.group.rotateX(position.deg);
+            }
+            if (position.direction == 'y') {
+              this.content.group.rotateY(position.deg);
+            }
+            if (position.direction == 'z') {
+              this.content.group.rotateZ(position.deg);
+            }
+          }
+        });
+    } else {
+      let index = 0;
+      const mo = () => {
+        console.log(position[index]);
+        if (position[index]) {
+          this.tween = new Tween.Tween(this.content.group.position);
+          this.tween
+            .to({ ...position[index] },position[index]?.time || 1000)
+            .start()
+            .onComplete(() => {
+              if (position[index].deg) {
+                if (position[index].direction == 'x') {
+                  this.content.group.rotateX(position[index].deg);
+                }
+                if (position[index].direction == 'y') {
+                  this.content.group.rotateY(position[index].deg);
+                }
+                if (position[index].direction == 'z') {
+                  this.content.group.rotateZ(position[index].deg);
+                }
+              }
+              index++;
+              mo();
+            });
+        }
+      };
+      mo();
+    }
   }
   initDrag(camera: ThreeConstruct.Camera, renderer: ThreeConstruct.Renderer) {
     this.dragControl = CreateThree.createDragControls(
@@ -110,29 +170,34 @@ export default class Geometry implements GeometryContainer {
       this.position = [e.object.position.x, e.object.position.y, e.object.position.z];
     });
   }
-  drag(event: Event) {
-    console.log(event);
+  bind(me: GeometryContainer) {
+    this.content.group?.add(me.content.thing);
   }
-  scale(...arg: any): void {
-    this.content.geo.scale(...arg);
+  unBind(me: GeometryContainer) {
+    this.content.group?.remove(me.content.thing);
+  }
+  scale(position: [number, number, number]): void {
+    this.content.group.scale.set(...position);
   }
   translate(...arg: any): void {
-    this.content.geo.translate(...arg);
+    this.content.group.translate(...arg);
   }
   rotateX(...arg: any): void {
-    this.content.geo.rotateX(...arg);
+    this.content.group.rotateX(...arg);
   }
   rotateY(...arg: any): void {
-    this.content.geo.rotateY(...arg);
+    this.content.group.rotateY(...arg);
   }
   center(): void {
-    this.content.geo.center();
+    this.content.group.center();
   }
   rotateZ(...arg: any): void {
-    this.content.geo.rotateZ(...arg);
+    this.content.group.rotateZ(...arg);
   }
   delete() {
     this.content.geo.dispose();
+    this.content.group.dispose();
+    this.content.thing.dispose();
     this.content.thing.removeFromParent();
     this.dragControl.dispose();
   }

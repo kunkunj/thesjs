@@ -123,17 +123,59 @@ export const createMaFn: ThreeConstruct.Material = (
         });
       }
       break;
+    case _CONSTANT_MATERAIL_.MeshLambertMaterial:
+      if (isObject(opt.materialOption)) {
+        let map: ThreeConstruct.Texture;
+        if (opt.materialOption?.map) {
+          map = CreateThree.createTextureLoader(opt.materialOption?.map, () => {
+            loadFinish(rt, watcher);
+          });
+        }
+        mat = CreateThree.createMeshLambertMaterial({
+          ...opt.materialOption,
+          color: CreateThree.createColor(
+            (opt?.materialOption as MaterialType)?.color || 'rgb(255,255,255)'
+          ),
+          side: CreateThree.getSlide(),
+          map: map,
+        });
+      }
+      if (isArray(opt.materialOption)) {
+        mat = opt.materialOption?.map((item: MaterialType) => {
+          let map: ThreeConstruct.Texture;
+          if (item?.map) {
+            map = CreateThree.createTextureLoader(opt.materialOption?.map, () => {
+              loadFinish(rt, watcher);
+            });
+          }
+          return CreateThree.createMeshLambertMaterial({
+            ...item,
+            color: CreateThree.createColor(item?.color || 'rgb(255,255,255)'),
+            side: CreateThree.getSlide(),
+            map: map,
+          });
+        });
+      }
+      break;
 
     default:
-      throwError(`无“${opt.material}”该材质`);
+      if (opt.material) {
+        throwError(`无“${opt.material}”该材质`);
+      }
       break;
   }
   return mat;
 };
 export default (opt: GeometryOptionType, watcher?: Function): ContentType => {
-  let rt: ContentType = { geo: null, mat: null, thing: null };
+  let rt: ContentType = { geo: null, mat: null, thing: null, group: null };
   rt.geo = createGeofn(opt, watcher, rt);
   rt.mat = createMaFn(opt, watcher, rt);
-  rt.thing = CreateThree.createMesh(rt.geo, rt.mat);
+  let mesh = CreateThree.createMesh(rt.geo, rt.mat);
+  rt.group = CreateThree.createGroup();
+  // rt.edges = CreateThree.createEdgesHelper(
+  //   mesh,
+  //   CreateThree.createColor((opt?.materialOption as MaterialType)?.color || 'rgb(255,255,255)')
+  // );
+  rt.thing = rt.group.add(mesh);
   return rt;
 };

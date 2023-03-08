@@ -5,9 +5,11 @@ import { DragControls } from '../controls/DragControls.js';
 import { throwError } from './utils';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { LoaderTypeOption } from '../types/thesFull.js';
 import { _collecter } from '../core/thes.js';
-
 //场景
 const createScene = () => new THREE.Scene();
 //点光源
@@ -110,10 +112,75 @@ const createFont = (url: string, loaderText: LoaderTypeOption, fn: Function) => 
     );
   });
 };
+//FBXLoader
+const createFBXLoader = (url: string, loaderText: LoaderTypeOption, fn: Function) => {
+  return new Promise((resolve: Function) => {
+    new FBXLoader().load(
+      url,
+      (object: ThreeConstruct.Geometry) => {
+        if (_collecter.watchType == 'count') {
+          loaderText._DEP_KEY._IS_FINISHED = true;
+          fn();
+        } else {
+          loaderText._DEP_KEY._SIZE = loaderText._DEP_KEY._CURRENT;
+          fn();
+        }
+        resolve(object);
+      },
+      (xhr: any) => {
+        if (_collecter.watchType == 'byte') {
+          loaderText._DEP_KEY._CURRENT = xhr.loaded;
+          loaderText._DEP_KEY._SIZE = xhr.total || loaderText._DEP_KEY._CURRENT + 100;
+          fn();
+        }
+        // console.log(xhr)
+      }
+    );
+  });
+};
+//obj
+const createOBJLoader = (
+  url: string,
+  loaderText: LoaderTypeOption,
+  fn: Function,
+  mtlUrl?: string
+) => {
+  return new Promise((resolve: Function) => {
+    new MTLLoader().load(mtlUrl, function (material: ThreeConstruct.Material) {
+      // 返回一个包含材质的对象MaterialCreator
+      //obj的模型会和MaterialCreator包含的材质对应起来
+      var oj = new OBJLoader();
+      oj.setMaterials(material);
+      oj.load(
+        url,
+        (object: ThreeConstruct.Geometry) => {
+          if (_collecter.watchType == 'count') {
+            loaderText._DEP_KEY._IS_FINISHED = true;
+            fn();
+          } else {
+            loaderText._DEP_KEY._SIZE = loaderText._DEP_KEY._CURRENT;
+            fn();
+          }
+          resolve(object);
+        },
+        (xhr: any) => {
+          if (_collecter.watchType == 'byte') {
+            loaderText._DEP_KEY._CURRENT = xhr.loaded;
+            loaderText._DEP_KEY._SIZE = xhr.total || loaderText._DEP_KEY._CURRENT + 100;
+            fn();
+          }
+          // console.log(xhr)
+        }
+      );
+    });
+  });
+};
 //基础材质
 const createMeshBasicMaterial = (...arg: any) => new THREE.MeshBasicMaterial(...arg);
+const createMeshLambertMaterial = (...arg: any) => new THREE.MeshLambertMaterial(...arg);
 //mesh
 const createMesh = (...arg: any) => new THREE.Mesh(...arg);
+const createEdgesHelper = (...arg: any) => new THREE.BoxHelper(...arg);
 const getSlide = () => THREE.DoubleSide;
 //创建CubeTextureLoader
 const createCubeTextureLoader = (...arg: any) => new THREE.CubeTextureLoader().load(...arg);
@@ -178,5 +245,9 @@ export default {
   createCatmullRomCurve3,
   createMatrix4,
   vector2,
-  createDragControls
+  createDragControls,
+  createMeshLambertMaterial,
+  createFBXLoader,
+  createOBJLoader,
+  createEdgesHelper,
 };

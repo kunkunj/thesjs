@@ -81,6 +81,7 @@ export enum _CONSTANT_GEOMETRY_ {
  */
 export enum _CONSTANT_MATERAIL_ {
   MeshBasicMaterial = 'basic',
+  MeshLambertMaterial = 'lamber'
 }
 
 /**

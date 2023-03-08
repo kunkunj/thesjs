@@ -3,6 +3,9 @@ import CreateThree from '../../common/three';
 import { _CONSTANT_CAMERA_, _CONSTANT_LIGHT_ } from '../../common/constant';
 
 export default (lig: PointType, scene: ThreeConstruct.Scene): ThreeConstruct.Camera => {
+  if (!lig) {
+    return {}
+  }
   let light: ThreeConstruct.Light;
   //光源类型
   switch (lig.type) {

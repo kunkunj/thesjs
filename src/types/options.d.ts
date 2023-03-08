@@ -164,7 +164,7 @@ export type optionsType = {
   view?: number;
   sceneName?: string;
   lights?: PointType;
-  ambientLight: AmbientType;
+  ambientLight?: AmbientType;
   background?: ThreeConstruct.Color | ThreeConstruct.CubeTexture | ThreeConstruct.Texture;
   backgroundBlurriness?: number;
   environment?: null | ThreeConstruct.Texture;

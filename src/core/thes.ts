@@ -34,7 +34,7 @@ import Group from './group';
 import Tween from '@tweenjs/tween.js';
 import SceneBox from './sceneBox';
 import { uniqBy, isArray, cloneDeep } from 'loadsh';
-import { createMaFn } from './converter/geometry';
+import { createGeofn, createMaFn } from './converter/geometry';
 import { PopupContainer, PopupType } from '../types/popup';
 import { Popup } from './popup';
 import { _CONSTANT_, _CONSTANT_BUS_, _Events } from '../common/constant';
@@ -143,11 +143,13 @@ export class Thes implements ThesContainer {
       ...opt?.style,
       font: font,
     });
+    let group = CreateThree.createGroup()
     //此处忽略类型是套用geometry封装流程
     return new CreateGeometry(opt as any, {
       mat,
       geo,
-      thing: CreateThree.createMesh(geo, mat),
+      group,
+      thing: group.add(CreateThree.createMesh(geo, mat)),
     });
   }
   //线条
@@ -161,8 +163,24 @@ export class Thes implements ThesContainer {
     return popup;
   }
   //loader
-  static createLoader(opt: LoaderType): GeometryContainer {
-    return new CreateGeometry(opt as any, CreateLoader(opt));
+  static async createLoader(opt: LoaderType): Promise<GeometryContainer> {
+    let loaderText = _createLoaderKey({});
+    _collecter.collect(loaderText);
+    const geo: any = await CreateThree.createOBJLoader(
+      opt?.url,
+      loaderText,
+      _collecter.watcher,
+      opt?.mtlUrl
+    );
+    let group = CreateThree.createGroup()
+    const mat = createMaFn(opt);
+    //此处忽略类型是套用geometry封装流程
+    return new CreateGeometry(opt as any, {
+      mat,
+      geo,
+      group,
+      thing: group.add(geo),
+    });
   }
   static createVector3(position: [number, number, number]) {
     return CreateThree.vector3(position);
@@ -177,7 +195,7 @@ export class Thes implements ThesContainer {
     scene._DEP_KEY._CURRENT = 0;
     scene._DEP_KEY._SIZE = 50;
     CreateLight(aopt.lights as PointType, scene);
-    CreateAmbient(aopt.ambientLight, scene);
+    CreateAmbient(aopt.ambientLight as AmbientType, scene);
     const sceneBox = new SceneBox(scene);
     sceneBox.opt = { ...opt, el: this.opt.el };
     sceneBox.camera = this.camera;

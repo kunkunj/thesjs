@@ -16,9 +16,11 @@ export function toastHook(loading: boolean) {
       if (loaded) {
         return;
       }
-      loading && loadpage && document.getElementsByTagName('body')[0].removeChild(loadpage);
-      loadpage = null;
-      _bus.$emit(_CONSTANT_.LOADED, num);
+      setTimeout(() => {
+        loading && loadpage && document.getElementsByTagName('body')[0].removeChild(loadpage);
+        loadpage = null;
+        _bus.$emit(_CONSTANT_.LOADED, num);
+      }, 100);
     }
     if (loading && !loaded && !toasted) {
       let styleList = [

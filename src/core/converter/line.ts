@@ -33,6 +33,6 @@ export default (opt: LineGeometryType): ContentType => {
   return {
     mat,
     geo,
-    thing: CreateThree.createLine(geo, mat),
+    thing: CreateThree.createGroup().add(CreateThree.createLine(geo, mat)),
   };
 };

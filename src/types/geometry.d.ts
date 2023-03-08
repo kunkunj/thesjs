@@ -1,6 +1,6 @@
 /**---------------------------------材质相关--------------------------------------- */
 
-import { _CONSTANT_GEOMETRY_ } from '../common/constant';
+import { _CONSTANT_GEOMETRY_, _CONSTANT_MATERAIL_ } from '../common/constant';
 import { LoaderTypeOption } from './thesFull';
 
 /**
@@ -11,7 +11,7 @@ import { LoaderTypeOption } from './thesFull';
  */
 export type MaterialList =
   | _CONSTANT_MATERAIL_.MeshBasicMaterial
-  | 'MeshLambertMaterial'
+  | _CONSTANT_MATERAIL_.MeshLambertMaterial
   | 'MeshPhongMaterial'
   | 'MeshStandardMaterial';
 
@@ -176,10 +176,8 @@ export type CylinderGeometryType = {
 export type PlaneGeometryType = {
   width: number;
   height: number;
-  depth: number;
   widthSegments?: number;
   heightSegments?: number;
-  depthSegments?: number;
 };
 /**
  * 球参数
@@ -265,6 +263,7 @@ export interface GeometryContainer {
 export type ContentType = {
   thing: ThreeConstruct.Mesh | ThreeConstruct.Line;
   geo: ThreeConstruct.Geometry;
+  group?: ThreeConstruct.Group;
   mat: ThreeConstruct.Material | ThreeConstruct.Material[];
   _DEP_KEY?: LoaderTypeOption._DEP_KEY;
 };
@@ -283,7 +282,7 @@ export type LineContainer = {
  *  position -- 位置
  * }
  */
-export type LoaderList = 'obj' | 'mmd' | 'gltf';
+export type LoaderList = 'obj' | 'mmd' | 'gltf' | 'fbx';
 export type LoaderOptionType = {
   color?: string;
   position?: [number, number, number];
@@ -292,5 +291,4 @@ export type LoaderType = {
   type: LoaderList;
   url: string;
   mtlUrl?: string;
-  loaderOption?: LoaderOptionType;
 };
