@@ -197,7 +197,7 @@ const getModelList = (event: any, camera: any, scene: any) => {
   let intersects = rayCaster.intersectObjects(scene.children, true);
   return intersects.map((item: any) => item.object);
 };
-const vector3 = (position: [number, number, number]) => {
+const vector3 = (position: number[]) => {
   return new THREE.Vector3(...position);
 };
 const vector2 = (position: [number, number]) => {

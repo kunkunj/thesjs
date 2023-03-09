@@ -29,4 +29,5 @@ namespace ThreeConstruct {
   export type Mesh = any;
   export type Font = any;
   export type Line = any;
+  export type Object3D = any
 }

@@ -4,7 +4,6 @@ import { setId, threeToScreen } from '../common/utils';
 import { PopupContainer, PopupType } from '../types/popup';
 import { ThesContainer } from '../types/thesFull';
 import { popupInspect } from './inspect/inspect';
-import { Thes } from './thes';
 export class Popup implements PopupContainer {
   cid: number = -1;
   opt: PopupType;
@@ -28,12 +27,15 @@ export class Popup implements PopupContainer {
     this.opt.content && (this.opt.content.style.left = left + 'px');
   }
   hide() {
-    this.isShow = false
+    this.isShow = false;
     this.opt.content && (this.opt.content.style.display = 'none');
   }
   show() {
-    this.isShow = true
+    this.isShow = true;
     this.opt.content && (this.opt.content.style.display = 'block');
+  }
+  dispose() {
+    this.th.el.removeChild(this.opt.content as Node);
   }
   addTo(th: ThesContainer) {
     this.th = th.sceneBox || th;
@@ -43,6 +45,6 @@ export class Popup implements PopupContainer {
       threeToScreen(this.opt.position, th.camera, this.opt.content as HTMLElement).left as any
     );
     // this.show();
-    _bus.$emit(_CONSTANT_BUS_.ADD_POPUP,th)
+    _bus.$emit(_CONSTANT_BUS_.ADD_POPUP, th);
   }
 }

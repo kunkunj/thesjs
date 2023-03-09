@@ -4,7 +4,7 @@ import { LoaderType } from '../types/geometry';
 import { _bus } from './bus';
 import { _CONSTANT_ } from './constant';
 import { LoadToast } from './tsx';
-import { compiler } from './utils';
+import { compiler, throwError } from './utils';
 export function toastHook(loading: boolean) {
   let loaded = false;
   let toasted = false;
@@ -64,6 +64,42 @@ export const mouseDownHook = (fn: Function) => {
   };
 };
 
+/**
+ * 动画注册hook
+ *
+ * 每一个组件，每一个功能点只能注册一个该动画
+ */
+type AniContent = {
+  name: string;
+  fn: Function;
+};
+// function THESANI(direction: 'x' | 'y' | 'z', time?: number) {
+//   this.direction = 
+// }
+// THESANI.prototype.from = function (deg: number) {
+//   this.start = deg;
+// };
+export const animateHook = () => {
+  let anis: AniContent[] = [];
+  function thes_add(anio: AniContent) {
+    const newAni = anis.find((ani: AniContent) => ani.name == anio.name);
+    if (!newAni) {
+      anis.push(anio);
+    } else {
+      newAni.fn = anio.fn;
+    }
+  }
+  function thes_update() {
+    anis.map((ani: AniContent) => {
+      ani.fn.call(null);
+    });
+  }
+  //旋转
+  return {
+    thes_add,
+    thes_update,
+  };
+};
 // export const keyDowmHook = (codeKey: string, fn: Function) => {
 //   document.onkeydown = e => {
 //     if (e.key == codeKey) {

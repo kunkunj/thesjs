@@ -31,6 +31,7 @@ import CreateControl from './converter/control';
 import CreateGeometry from './geometry';
 import CreateLoader from './converter/loader';
 import Group from './group';
+import CreateFlame from './converter/flame';
 import Tween from '@tweenjs/tween.js';
 import SceneBox from './sceneBox';
 import { uniqBy, isArray, cloneDeep } from 'loadsh';
@@ -40,9 +41,14 @@ import { Popup } from './popup';
 import { _CONSTANT_, _CONSTANT_BUS_, _Events } from '../common/constant';
 import { _bus } from '../common/bus';
 import { Collecter, CollecterContainer } from '../common/collecter';
-import { mouseDownHook, toastHook } from '../common/hooks';
+import { animateHook, mouseDownHook, toastHook } from '../common/hooks';
+import { LoadTip, TipType } from '../common/tsx';
+
+const { thes_add, thes_update } = animateHook();
 
 export let _collecter: CollecterContainer;
+export const _UPDATE_HOOK_ = thes_update;
+export const _ADD_HOOK_ = thes_add;
 
 type EventsType = {
   [index in _Events]: _CONSTANT_.EVENTON | _CONSTANT_.EVENTOFF;
@@ -143,7 +149,7 @@ export class Thes implements ThesContainer {
       ...opt?.style,
       font: font,
     });
-    let group = CreateThree.createGroup()
+    let group = CreateThree.createGroup();
     //此处忽略类型是套用geometry封装流程
     return new CreateGeometry(opt as any, {
       mat,
@@ -172,7 +178,7 @@ export class Thes implements ThesContainer {
       _collecter.watcher,
       opt?.mtlUrl
     );
-    let group = CreateThree.createGroup()
+    let group = CreateThree.createGroup();
     const mat = createMaFn(opt);
     //此处忽略类型是套用geometry封装流程
     return new CreateGeometry(opt as any, {
@@ -187,6 +193,26 @@ export class Thes implements ThesContainer {
   }
   static createWebGLCubeRenderTarget(): null {
     return null;
+  }
+  static createFlame(url: string) {
+    let group = CreateThree.createGroup();
+    let mat = null;
+    let geo = null;
+    return new CreateGeometry(url as any, {
+      mat,
+      geo,
+      group,
+      thing: group.add(CreateFlame(url)),
+    });
+  }
+  static createTip(opt: TipType) {
+    const dom = compiler(LoadTip(opt));
+    document.body.appendChild(dom);
+    return {
+      dispose: () => {
+        document.body.removeChild(dom);
+      },
+    };
   }
   //场景
   createScene(opt: optionsType) {
@@ -237,6 +263,7 @@ export class Thes implements ThesContainer {
     let _ = this;
     function render() {
       Tween.update();
+      _UPDATE_HOOK_();
       _.renderer.render(_.scene, _.camera);
       _.renderer.aniID = requestAnimationFrame(render);
     }
@@ -251,7 +278,7 @@ export class Thes implements ThesContainer {
     if (!sceneBoxId && this.scenes.length == 1) {
       this.scenes[0].modelBox.push(me);
       this.scenes[0].scene.add(me.content.thing);
-      me.initDrag(this.camera, this.renderer);
+      me.initDrag && me.initDrag(this.camera, this.renderer);
       return true;
     }
     if (!sceneBoxId && this.scenes.length > 1) {
@@ -268,7 +295,7 @@ export class Thes implements ThesContainer {
       }
       scene.modelBox.push(me);
       scene.scene.add(me.content.thing);
-      me.initDrag(this.camera, this.renderer);
+      me.initDrag && me.initDrag(this.camera, this.renderer);
       return true;
     }
     return false;
@@ -309,6 +336,50 @@ export class Thes implements ThesContainer {
       } catch (error) {}
     }
   }
+  flyTo(position: { x: number; y: number; z: number; time?: number }) {
+    // console.log(position)
+    let tween = new Tween.Tween(this.camera.position);
+    tween
+      .to({ ...position }, position?.time || 1000)
+      .start()
+      .onComplete(() => {
+        this.camera.position.set(position.x, position.y, position.z);
+      });
+  }
+  lookAt(me: GeometryContainer | { position: [number, number, number] }) {
+    this.camera.lookAt(me.position[0], me.position[1], me.position[2]);
+    this.control.position0.set(me.position[0], me.position[1], me.position[2]);
+    this.control.target.set(me.position[0], me.position[1], me.position[2]);
+  }
+  moveAt(me: GeometryContainer, view?: number, distance?: number, cb?: Function) {
+    let pointList: Record<string, any>[] = [];
+    let date = Date.now();
+    let rtb: any = {};
+    me._MOVEAT_((val1: Record<string, any>) => {
+      let val = cloneDeep(val1);
+      rtb.point = val;
+      if (pointList.length < (distance || 150)) {
+        pointList.unshift(val);
+      } else {
+        pointList.unshift(val);
+        let last10 = pointList.pop();
+        // console.log(last10,Date.now()-date)
+        if (!rtb.firstExcute) {
+          rtb.firstExcute = {
+            point: last10,
+            date: Date.now() - date,
+          };
+        }
+        this.flyTo({ x: last10?.x, y: last10?.y + (view || 30), z: last10?.z, time: 1 });
+      }
+      // console.log(val)
+      this.lookAt({
+        position: [val.x, val.y, val.z],
+      });
+      cb?.call(null, rtb);
+    });
+  }
+  flyReset() {}
   //获取视图中心的地图坐标
   getCenter(): PositionType | undefined {
     return this.sceneBox.cameraInit._LOOKCENTER;

@@ -254,7 +254,9 @@ export interface GeometryContainer {
   isDrag: boolean;
   position: number[];
   opt: GeometryOptionType | undefined;
+  _ONMOVE_: Function | null;
   setColor(color: ThreeConstruct.Color): void;
+  _MOVEAT_(fn:Function):void
   initDrag(camera: ThreeConstruct.Camera, renderer: ThreeConstruct.Renderer): void;
 }
 /**

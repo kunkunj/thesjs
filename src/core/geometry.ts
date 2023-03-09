@@ -6,7 +6,7 @@ import {
   TextGeometryType,
 } from '../types/geometry';
 import CreateThree from '../common/three';
-import { setId, extendParent, throwError, _createLoaderKey } from '../common/utils';
+import { setId, extendParent, throwError, _createLoaderKey, throttle } from '../common/utils';
 import { geometryInspect } from './inspect/inspect';
 import CreateGeometry from './converter/geometry';
 import Tween from '@tweenjs/tween.js';
@@ -39,8 +39,13 @@ export default class Geometry implements GeometryContainer {
   dragControl: any = {};
   position: number[];
   static props = [];
+  _ONMOVE_: Function | null = null;
   _IS_DRAG_: boolean = false;
   _IS_CTRL_: boolean = false;
+  _IS_MOVE_: boolean = false;
+  _ROTATEX_: any;
+  _ROTATEY_: any;
+  _ROTATEZ_: any;
   get isDrag() {
     return this._IS_DRAG_;
   }
@@ -50,6 +55,15 @@ export default class Geometry implements GeometryContainer {
       this.dragControl.enabled = true;
     } else {
       this.dragControl.enabled = false;
+    }
+  }
+  get isMove() {
+    return this._IS_MOVE_;
+  }
+  set isMove(val: boolean) {
+    this._IS_MOVE_ = val;
+    if (!val) {
+      this._ONMOVE_ = null;
     }
   }
   constructor(opt: GeometryOptionType, geo?: ThreeConstruct.Geometry) {
@@ -108,52 +122,70 @@ export default class Geometry implements GeometryContainer {
       time?: number;
       deg?: any;
       direction: 'x' | 'y' | 'z';
-    }[]
+    }[],
+    onMove?: Function,
+    onEnded?: Function
   ) {
     // this.content.geo.translate();
-    console.log(position.x);
     if (position.x) {
       this.tween = new Tween.Tween(this.content.group.position);
+      this.isMove = true;
       this.tween
-        .to({ ...position },position?.time || 1000)
+        .to({ ...position }, position?.time || 1000)
         .start()
+        .onUpdate((val: Record<string, any>) => {
+          this._ONMOVE_?.call(null, val);
+          onMove?.call(null, val);
+        })
         .onComplete(() => {
           if (position.deg) {
             if (position.direction == 'x') {
               this.content.group.rotateX(position.deg);
-            }
-            if (position.direction == 'y') {
+            } else if (position.direction == 'y') {
+              this.content.group.rotateY(position.deg);
+            } else if (position.direction == 'z') {
+              this.content.group.rotateZ(position.deg);
+            } else {
               this.content.group.rotateY(position.deg);
             }
-            if (position.direction == 'z') {
-              this.content.group.rotateZ(position.deg);
-            }
           }
+          this.isMove = false;
+          onEnded?.call(null);
+          this.setPosition([position.x, position.y, position.z]);
         });
     } else {
       let index = 0;
       const mo = () => {
-        console.log(position[index]);
         if (position[index]) {
           this.tween = new Tween.Tween(this.content.group.position);
           this.tween
-            .to({ ...position[index] },position[index]?.time || 1000)
+            .to({ ...position[index] }, position[index]?.time || 1000)
             .start()
+            .onUpdate(
+              throttle((val: Record<string, any>) => {
+                this._ONMOVE_?.call(null, { ...val[0], line: index + 1 });
+                onMove?.call(null, { ...val[0], line: index + 1 });
+              }, 1)
+            )
             .onComplete(() => {
               if (position[index].deg) {
                 if (position[index].direction == 'x') {
                   this.content.group.rotateX(position[index].deg);
-                }
-                if (position[index].direction == 'y') {
+                } else if (position[index].direction == 'y') {
                   this.content.group.rotateY(position[index].deg);
-                }
-                if (position[index].direction == 'z') {
+                } else if (position[index].direction == 'z') {
                   this.content.group.rotateZ(position[index].deg);
+                } else {
+                  this.content.group.rotateY(position[index].deg);
                 }
               }
               index++;
               mo();
             });
+        } else {
+          this.setPosition([position[index - 1].x, position[index - 1].y, position[index - 1].z]);
+          this.isMove = false;
+          onEnded?.call(null);
         }
       };
       mo();
@@ -182,17 +214,23 @@ export default class Geometry implements GeometryContainer {
   translate(...arg: any): void {
     this.content.group.translate(...arg);
   }
-  rotateX(...arg: any): void {
-    this.content.group.rotateX(...arg);
+  rotateX(deg: number): void {
+    this.content.group.rotateX(deg);
+    this._ROTATEX_ = deg;
   }
-  rotateY(...arg: any): void {
-    this.content.group.rotateY(...arg);
+  rotateY(deg: number): void {
+    this.content.group.rotateY(deg);
+    this._ROTATEY_ = deg;
   }
   center(): void {
     this.content.group.center();
   }
-  rotateZ(...arg: any): void {
-    this.content.group.rotateZ(...arg);
+  rotateZ(deg: number): void {
+    this.content.group.rotateZ(deg);
+    this._ROTATEZ_ = deg;
+  }
+  _MOVEAT_(cb: Function) {
+    this._ONMOVE_ = cb;
   }
   delete() {
     this.content.geo.dispose();

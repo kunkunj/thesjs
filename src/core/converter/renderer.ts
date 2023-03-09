@@ -1,5 +1,6 @@
 import CreateThree from '../../common/three';
 import Tween from '@tweenjs/tween.js';
+import { _UPDATE_HOOK_ } from '../thes';
 export default (
   el: Element,
   width: number,
@@ -12,6 +13,7 @@ export default (
   el.appendChild(renderer.domElement);
   function render() {
     Tween.update();
+    _UPDATE_HOOK_()
     renderer.render(scene, camera);
     renderer.aniID = requestAnimationFrame(render);
   }

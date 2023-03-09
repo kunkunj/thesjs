@@ -77,6 +77,11 @@ export function compiler(tsx: TsxType) {
   if (tsx['content']) {
     dom.innerHTML = tsx['content'];
   }
+  if (tsx['on']) {
+    tsx['on']?.map(item => {
+      dom.addEventListener(item.type, item.fn);
+    });
+  }
   if (tsx['children'] && tsx['children'].length) {
     tsx['children'].map((item: TsxType) => {
       dom.appendChild(compiler(item));
@@ -88,7 +93,7 @@ export function throttle(fn: Function, time: number) {
   let d0 = Date.now();
   return function () {
     if (Date.now() - d0 > time) {
-      fn.call(null);
+      fn.call(null, arguments);
       d0 = Date.now();
     }
   };
