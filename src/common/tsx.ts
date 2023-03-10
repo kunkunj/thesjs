@@ -71,6 +71,7 @@ export type TipType = {
   onCancle?: Function;
   showSure?: boolean;
   showCancle?: boolean;
+  showTime?: number;
 };
 export const LoadTip = (tip: TipType): TsxType => {
   return {
@@ -85,8 +86,9 @@ export const LoadTip = (tip: TipType): TsxType => {
         `;
         left: 0;
         right:0;
+        top:0;
         margin:auto;
-        z-index: 9999;
+        z-index: 999;
         display: flex;
         justify-content: center`,
     },
@@ -105,7 +107,7 @@ export const LoadTip = (tip: TipType): TsxType => {
             font-size: 16px;
             letter-spacing: 1px;
             color: #7c7b7b;
-            min-height: 100px;
+            min-height: 40px;
             max-width: 600px;
             z-index: 9999;
             background: #fff`,
@@ -130,8 +132,7 @@ const getBtns = (tip: TipType): TsxType => {
       tag: 'div',
       attrs: {
         style:
-          `  width: 80px;
-          height: 30px;
+          `padding: 5px 10px;;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -158,14 +159,13 @@ const getBtns = (tip: TipType): TsxType => {
       tag: 'div',
       attrs: {
         style:
-          `  width: 80px;
-          height: 30px;
+          `padding: 5px 10px;;
           display: flex;
           justify-content: center;
           align-items: center;
           border-radius: 5px;
           background: ` +
-          (tip.sureBackground || '#4d5054') +
+          (tip.sureBackground || '#4588FF') +
           `;
           color: ` +
           (tip.sureColor || '#fff') +
@@ -191,7 +191,9 @@ const getBtns = (tip: TipType): TsxType => {
   let ti: TsxType = {
     tag: 'div',
     attrs: {
-      style: `height: 50px; display: flex;justify-content: flex-end;align-items: center;`,
+      style: `height: 50px; display: ${
+        tip.showCancle == false && tip.showSure == false ? 'none' : 'flex'
+      };justify-content: flex-end;align-items: center;`,
     },
     children: arr,
   };

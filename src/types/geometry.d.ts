@@ -1,7 +1,7 @@
 /**---------------------------------材质相关--------------------------------------- */
 
 import { _CONSTANT_GEOMETRY_, _CONSTANT_MATERAIL_ } from '../common/constant';
-import { LoaderTypeOption } from './thesFull';
+import { LoaderTypeOption, ThesContainer } from './thesFull';
 
 /**
  * MeshBasicMaterial -- 基础网格材质，不受光照影响的材质
@@ -251,6 +251,7 @@ export type GeometryType = {
 export interface GeometryContainer {
   id: number;
   content: ContentType;
+  PARENT_THES: any;
   isDrag: boolean;
   position: number[];
   opt: GeometryOptionType | undefined;

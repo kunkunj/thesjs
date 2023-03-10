@@ -6,6 +6,7 @@ import { ThesContainer } from '../types/thesFull';
 import { popupInspect } from './inspect/inspect';
 export class Popup implements PopupContainer {
   cid: number = -1;
+  type = 'popup';
   opt: PopupType;
   th: any;
   isShow: boolean = false;
@@ -35,7 +36,7 @@ export class Popup implements PopupContainer {
     this.opt.content && (this.opt.content.style.display = 'block');
   }
   dispose() {
-    this.th.el.removeChild(this.opt.content as Node);
+    this.th?.opt.el.removeChild(this.opt.content as Node);
   }
   addTo(th: ThesContainer) {
     this.th = th.sceneBox || th;
@@ -44,7 +45,6 @@ export class Popup implements PopupContainer {
       threeToScreen(this.opt.position, th.camera, this.opt.content as HTMLElement).top,
       threeToScreen(this.opt.position, th.camera, this.opt.content as HTMLElement).left as any
     );
-    // this.show();
     _bus.$emit(_CONSTANT_BUS_.ADD_POPUP, th);
   }
 }

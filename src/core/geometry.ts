@@ -15,6 +15,7 @@ import { _CONSTANT_ } from '../common/constant';
 import { _collecter } from './thes';
 import { LoaderTypeOption } from '../types/thesFull';
 import { _bus } from '../common/bus';
+import { PopupContainer } from '../types/popup';
 /**
  *
  * 懒加载思路标记，目前实用地少，后续改动
@@ -38,6 +39,7 @@ export default class Geometry implements GeometryContainer {
   _load: LoaderTypeOption;
   dragControl: any = {};
   position: number[];
+  PARENT_THES: any;
   static props = [];
   _ONMOVE_: Function | null = null;
   _IS_DRAG_: boolean = false;
@@ -203,10 +205,28 @@ export default class Geometry implements GeometryContainer {
     });
   }
   bind(me: GeometryContainer) {
+    me.PARENT_THES = this.PARENT_THES;
+    if ((me as any).type == 'popup') {
+      (me as any).opt.position = [
+        this.position[0],
+        this.getSize().max.y + parseFloat((me as any).opt.offset),
+        this.position[2],
+      ] as any;
+      (me as any).addTo(this.PARENT_THES);
+      return;
+    }
     this.content.group?.add(me.content.thing);
   }
   unBind(me: GeometryContainer) {
+    me.PARENT_THES = null;
+    if ((me as any).type == 'popup') {
+      (me as any).dispose();
+      return;
+    }
     this.content.group?.remove(me.content.thing);
+  }
+  getSize() {
+    return CreateThree.createBox3(this.content.thing);
   }
   scale(position: [number, number, number]): void {
     this.content.group.scale.set(...position);

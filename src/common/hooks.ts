@@ -16,11 +16,9 @@ export function toastHook(loading: boolean) {
       if (loaded) {
         return;
       }
-      setTimeout(() => {
-        loading && loadpage && document.getElementsByTagName('body')[0].removeChild(loadpage);
-        loadpage = null;
-        _bus.$emit(_CONSTANT_.LOADED, num);
-      }, 100);
+      loading && loadpage && document.getElementsByTagName('body')[0].removeChild(loadpage);
+      loadpage = null;
+      _bus.$emit(_CONSTANT_.LOADED, num);
     }
     if (loading && !loaded && !toasted) {
       let styleList = [
@@ -34,7 +32,6 @@ export function toastHook(loading: boolean) {
       ];
       StyleContainer.createStyle(styleList);
       loadpage = compiler(LoadToast(0));
-      console.log(loadpage);
       document.getElementsByTagName('body')[0].appendChild(loadpage);
       toasted = true;
     }

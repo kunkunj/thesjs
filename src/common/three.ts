@@ -206,8 +206,12 @@ const vector2 = (position: [number, number]) => {
 const createMatrix4 = () => {
   return new THREE.Matrix4();
 };
+const createBox3 = (...arg: any) => {
+  return new THREE.Box3().setFromObject(...arg);
+};
 export default {
   THREE,
+  createBox3,
   createScene,
   createLight,
   createAmbient,

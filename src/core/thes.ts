@@ -85,6 +85,7 @@ export class Thes implements ThesContainer {
   _load: LoaderTypeOption;
   _IS_CTRL_FLAG: boolean = false;
   _IS_DRAG_MODAL: any;
+  _LOOK_POSITION_: any;
   _THES_THING: any;
   constructor(opt: optionsType) {
     let loading: boolean = opt.loading || true;
@@ -278,6 +279,7 @@ export class Thes implements ThesContainer {
     if (!sceneBoxId && this.scenes.length == 1) {
       this.scenes[0].modelBox.push(me);
       this.scenes[0].scene.add(me.content.thing);
+      me.PARENT_THES = this.scenes[0];
       me.initDrag && me.initDrag(this.camera, this.renderer);
       return true;
     }
@@ -295,6 +297,7 @@ export class Thes implements ThesContainer {
       }
       scene.modelBox.push(me);
       scene.scene.add(me.content.thing);
+      me.PARENT_THES = scene;
       me.initDrag && me.initDrag(this.camera, this.renderer);
       return true;
     }
@@ -342,14 +345,16 @@ export class Thes implements ThesContainer {
     tween
       .to({ ...position }, position?.time || 1000)
       .start()
-      .onComplete(() => {
-        this.camera.position.set(position.x, position.y, position.z);
+      .onUpdate(() => {
+        this.lookAt(this._LOOK_POSITION_);
       });
   }
   lookAt(me: GeometryContainer | { position: [number, number, number] }) {
     this.camera.lookAt(me.position[0], me.position[1], me.position[2]);
     this.control.position0.set(me.position[0], me.position[1], me.position[2]);
     this.control.target.set(me.position[0], me.position[1], me.position[2]);
+    this.control.update();
+    this._LOOK_POSITION_ = me;
   }
   moveAt(me: GeometryContainer, view?: number, distance?: number, cb?: Function) {
     let pointList: Record<string, any>[] = [];
@@ -440,11 +445,11 @@ export class Thes implements ThesContainer {
   _POPUP_ChANGE() {
     this.control.addEventListener(_CONSTANT_.EVENTCHANGE, () => {
       Thes.popupList.map(item => {
-        if (item.th.cid === this.sceneBox.cid) {
+        if (item.th?.cid === this.sceneBox.cid) {
           item.setPosition(
             threeToScreen(item.opt.position, this.camera, item.opt.content as HTMLElement).top,
-            threeToScreen(item.opt.position, this.camera, item.opt.content as HTMLElement)
-              .left as any
+            (threeToScreen(item.opt.position, this.camera, item.opt.content as HTMLElement)
+              .left as any)
           );
         }
       });

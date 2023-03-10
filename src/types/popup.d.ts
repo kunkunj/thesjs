@@ -5,6 +5,7 @@
 export type PopupType = {
   position: [number, number, number];
   content?: HTMLElement;
+  offset?:number
 };
 export interface PopupContainer {
   cid: number;
