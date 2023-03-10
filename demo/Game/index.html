@@ -13,9 +13,25 @@
         margin: 0;
         padding: 0;
       }
+      .chat {
+        background: #fff;
+        border-radius: 7px;
+        display: none;
+        padding: 5px 10px;
+        max-width: 100px;
+        position: relative;
+      }
+      .chat::after{
+        content: '';
+        display: inline-block;
+        position: absolute;
+        left: calc(50% - 10px);
+        top: 97%;
+        border: 10px solid #fff;
+        border-color:  #fff transparent transparent transparent;
+      }
     </style>
 
-    
     <script>
       // return;
       let xw;
@@ -51,6 +67,7 @@
       th.on('loaded', () => {
         console.log('加载成功');
       });
+      // th.createState()
     </script>
     <script src="./chat.js"></script>
     <script src="./scene.js"></script>

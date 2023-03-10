@@ -1,7 +1,7 @@
 const createPlane = () => {
   let plane = Thes.createGeometry({
     geometry: 'box',
-    material: 'lamber',
+    material: 'basic',
     position: [0, 0, 0],
     geometryOption: {
       width: 800,
@@ -52,19 +52,6 @@ const initeBuild = pos => {
     },
     materialOption: {
       map: '../assets/cd.png',
-    },
-  });
-  let build4 = Thes.createGeometry({
-    geometry: 'box',
-    material: 'lamber',
-    position: [-220, 6, 20],
-    geometryOption: {
-      width: 350,
-      height: 2,
-      depth: 150,
-    },
-    materialOption: {
-      map: '../assets/qiang.jpg',
     },
   });
   let build5 = Thes.createGeometry({
@@ -172,7 +159,6 @@ const initeBuild = pos => {
   th.add(build1);
   th.add(build2);
   th.add(build3);
-  th.add(build4);
   th.add(build5);
   th.add(build6);
   th.add(build7);
@@ -257,7 +243,7 @@ const tip = Thes.createTip({
     //     { x: -350, y: 32, z: -100, time: 9000, deg: -Math.PI / 2 },
     //   ]);
     // }, 5000);
-      startChat()
+    startChat();
   },
   onCancle() {},
 });

@@ -206,6 +206,8 @@ export type SphereGeometryType = {
  * map -- 颜色贴图
  * wireframe -- 线框模式
  * side -- 显示模式，MeshLambertMaterial有效
+ * transparent -- 是否开启透明度
+ * opacity -- 透明度
  */
 export type MaterialType = {
   color?: ThreeConstruct.Color;
@@ -213,6 +215,8 @@ export type MaterialType = {
   fog?: boolean;
   map?: ThreeConstruct.Texture;
   wireframe?: boolean;
+  transparent?: boolean;
+  opacity?: number;
 };
 /**
  * geometry -- 几何体类型
@@ -257,7 +261,7 @@ export interface GeometryContainer {
   opt: GeometryOptionType | undefined;
   _ONMOVE_: Function | null;
   setColor(color: ThreeConstruct.Color): void;
-  _MOVEAT_(fn:Function):void
+  _MOVEAT_(fn: Function): void;
   initDrag(camera: ThreeConstruct.Camera, renderer: ThreeConstruct.Renderer): void;
 }
 /**

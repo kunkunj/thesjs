@@ -151,6 +151,7 @@ export default class Geometry implements GeometryContainer {
               this.content.group.rotateY(position.deg);
             }
           }
+          this._ONMOVE_?.call(null, { finish: true });
           this.isMove = false;
           onEnded?.call(null);
           this.setPosition([position.x, position.y, position.z]);
@@ -186,7 +187,9 @@ export default class Geometry implements GeometryContainer {
             });
         } else {
           this.setPosition([position[index - 1].x, position[index - 1].y, position[index - 1].z]);
+          this._ONMOVE_?.call(null, { finish: true });
           this.isMove = false;
+          console.log('finnish',this._ONMOVE_)
           onEnded?.call(null);
         }
       };

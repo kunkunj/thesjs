@@ -6,17 +6,11 @@ export default (
   width: number,
   height: number,
   scene: ThreeConstruct.Scene,
-  camera: ThreeConstruct.Camera
+  camera: ThreeConstruct.Camera,
 ): ThreeConstruct.Renderer => {
-  const renderer: ThreeConstruct.Renderer = CreateThree.createRenderer();
+  const renderer: ThreeConstruct.Renderer = CreateThree.createRenderer({ antialias: true });
   renderer.setSize(width, height);
   el.appendChild(renderer.domElement);
-  function render() {
-    Tween.update();
-    _UPDATE_HOOK_()
-    renderer.render(scene, camera);
-    renderer.aniID = requestAnimationFrame(render);
-  }
-  render();
+  
   return renderer;
 };

@@ -41,10 +41,19 @@ export class Popup implements PopupContainer {
   addTo(th: ThesContainer) {
     this.th = th.sceneBox || th;
     th.opt.el.appendChild(this.opt.content as Node);
-    this.setPosition(
-      threeToScreen(this.opt.position, th.camera, this.opt.content as HTMLElement).top,
-      threeToScreen(this.opt.position, th.camera, this.opt.content as HTMLElement).left as any
-    );
-    _bus.$emit(_CONSTANT_BUS_.ADD_POPUP, th);
+    new (MutationObserver as any)(() => {
+      this.setPosition(
+        threeToScreen(this.opt.position, th.camera, this.opt.content as HTMLElement).top,
+        threeToScreen(this.opt.position, th.camera, this.opt.content as HTMLElement).left as any
+      );
+      _bus.$emit(_CONSTANT_BUS_.ADD_POPUP, th);
+    }).observe(th.opt.el, {
+      attributes: true,
+      characterData: true,
+      childList: true,
+      subtree: true,
+      attributeOldValue: true,
+      characterDataOldValue: true,
+    });
   }
 }

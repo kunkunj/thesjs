@@ -10,6 +10,8 @@ import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { LoaderTypeOption } from '../types/thesFull.js';
 import { _collecter } from '../core/thes.js';
+import Stats from 'three/examples/jsm/libs/stats.module.js'
+
 //场景
 const createScene = () => new THREE.Scene();
 //点光源
@@ -25,7 +27,7 @@ const createPerspectiveCamera = (...arg: any) => new THREE.PerspectiveCamera(...
 //立体相机
 const createStereoCamera = (...arg: any) => new THREE.StereoCamera(...arg);
 //渲染器
-const createRenderer = () => new THREE.WebGLRenderer();
+const createRenderer = (...arg: any) => new THREE.WebGLRenderer(...arg);
 //颜色
 const createColor = (color: string) => {
   if (color.indexOf('rgb') == -1) {
@@ -209,8 +211,10 @@ const createMatrix4 = () => {
 const createBox3 = (...arg: any) => {
   return new THREE.Box3().setFromObject(...arg);
 };
+const createStats = ()=> new Stats()
 export default {
   THREE,
+  createStats,
   createBox3,
   createScene,
   createLight,

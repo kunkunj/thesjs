@@ -16,6 +16,7 @@ export function toastHook(loading: boolean) {
       if (loaded) {
         return;
       }
+      loaded = true
       loading && loadpage && document.getElementsByTagName('body')[0].removeChild(loadpage);
       loadpage = null;
       _bus.$emit(_CONSTANT_.LOADED, num);

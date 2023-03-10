@@ -10,6 +10,7 @@ export interface ThesContainer {
   camera: ThreeConstruct.Camera;
   renderer: ThreeConstruct.Renderer;
   sceneBox: SceneBoxType;
+  stats: any;
   models: any[];
   add(me: GeometryContainer, sceneBoxId: number): boolean;
   events: { [key in 'click' | 'move' | 'leave']: 'on' | 'off' };

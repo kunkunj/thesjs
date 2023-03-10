@@ -87,6 +87,7 @@ export class Thes implements ThesContainer {
   _IS_DRAG_MODAL: any;
   _LOOK_POSITION_: any;
   _THES_THING: any;
+  stats: any;
   constructor(opt: optionsType) {
     let loading: boolean = opt.loading || true;
     const { notify } = toastHook(loading);
@@ -131,6 +132,15 @@ export class Thes implements ThesContainer {
     this.control.rotateSpeed = 0.5;
     this.control.enableDamping = true;
     this.control.dampingFactor = 0.1;
+    let _ = this;
+    function render() {
+      Tween.update();
+      _UPDATE_HOOK_();
+      _.stats?.update();
+      _.renderer.render(_.scene, _.camera);
+      _.renderer.aniID = requestAnimationFrame(render);
+    }
+    render();
     this._POPUP_ChANGE();
     this._INIT(_collecter.watcher);
   }
@@ -215,6 +225,18 @@ export class Thes implements ThesContainer {
       },
     };
   }
+  createState() {
+    this.stats = CreateThree.createStats();
+
+    // 设置监视器面板，传入面板id（0: fps, 1: ms, 2: mb）
+    this.stats.setMode(0);
+    // 设置监视器位置
+    this.stats.domElement.style.position = 'absolute';
+    this.stats.domElement.style.left = '0px';
+    this.stats.domElement.style.top = '0px';
+    // 将监视器添加到页面中
+    document.body.appendChild(this.stats.domElement);
+  }
   //场景
   createScene(opt: optionsType) {
     let aopt = OptionFilter(opt);
@@ -265,6 +287,7 @@ export class Thes implements ThesContainer {
     function render() {
       Tween.update();
       _UPDATE_HOOK_();
+      _.stats?.update();
       _.renderer.render(_.scene, _.camera);
       _.renderer.aniID = requestAnimationFrame(render);
     }
@@ -362,6 +385,13 @@ export class Thes implements ThesContainer {
     let rtb: any = {};
     me._MOVEAT_((val1: Record<string, any>) => {
       let val = cloneDeep(val1);
+      if (val.finish) {
+        this.control.enabled = true;
+        this.lookAt(this._LOOK_POSITION_);
+        return;
+      } else {
+        this.control.enabled && (this.control.enabled = false);
+      }
       rtb.point = val;
       if (pointList.length < (distance || 150)) {
         pointList.unshift(val);
@@ -375,12 +405,15 @@ export class Thes implements ThesContainer {
             date: Date.now() - date,
           };
         }
-        this.flyTo({ x: last10?.x, y: last10?.y + (view || 30), z: last10?.z, time: 1 });
+        // this.flyTo({ x: last10?.x, y: last10?.y + (view || 30), z: last10?.z, time: 1 });
+        this.camera.position.set(last10?.x, view || 60, last10?.z);
       }
+      this.camera.lookAt(val.x, val.y, val.z);
+      this._LOOK_POSITION_ = { position: [val.x, val.y, val.z] };
       // console.log(val)
-      this.lookAt({
-        position: [val.x, val.y, val.z],
-      });
+      // this.lookAt({
+      //   position: [val.x, val.y, val.z],
+      // });
       cb?.call(null, rtb);
     });
   }
@@ -448,8 +481,8 @@ export class Thes implements ThesContainer {
         if (item.th?.cid === this.sceneBox.cid) {
           item.setPosition(
             threeToScreen(item.opt.position, this.camera, item.opt.content as HTMLElement).top,
-            (threeToScreen(item.opt.position, this.camera, item.opt.content as HTMLElement)
-              .left as any)
+            threeToScreen(item.opt.position, this.camera, item.opt.content as HTMLElement)
+              .left as any
           );
         }
       });
