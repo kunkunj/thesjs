@@ -1,4 +1,3 @@
-
 let index = 0;
 function startChat(time = 3000) {
   let chatArr = [
@@ -23,12 +22,23 @@ function startChat(time = 3000) {
       content: '谢谢啦!',
     },
   ];
-  const popup = setChat(chatArr[index].peo, chatArr[index].content);
-  setTimeout(() => {
-    chatArr[index].peo.unBind(popup);
-    index++;
-    startChat(3000);
-  }, time);
+  if (chatArr[index]) {
+    const popup = setChat(chatArr[index].peo, chatArr[index].content);
+    setTimeout(() => {
+      chatArr[index].peo.unBind(popup);
+      index++;
+      startChat(3000);
+    }, time);
+  } else {
+        th.moveAt(xw);
+      th.flyTo({ x: 365, y: 62, z: 159.95240000076592, time: 2525 });
+      xw.moveTo([
+        { x: 365, y: 32, z: 150, time: 1000, deg: Math.PI / 2 },
+        { x: 0, y: 32, z: 150, time: 10000, deg: -Math.PI / 2 },
+        { x: 0, y: 32, z: -100, time: 5000, deg: Math.PI / 2 },
+        { x: -350, y: 32, z: -100, time: 9000, deg: -Math.PI / 2 },
+      ]);
+  }
 }
 function setChat(peo, text) {
   let dom = document.createElement('div');
