@@ -14,7 +14,7 @@ import { isArray, isObject, isString } from 'loadsh';
 import { _CONSTANT_ } from '../common/constant';
 import { _collecter } from './thes';
 import { LoaderTypeOption } from '../types/thesFull';
-import { _bus } from '../common/bus';
+import { _bus, _keybus } from '../common/bus';
 import { PopupContainer } from '../types/popup';
 /**
  *
@@ -32,7 +32,8 @@ import { PopupContainer } from '../types/popup';
  * 优点，构造时不会加载模型，调用th.add时才加载
  */
 export default class Geometry implements GeometryContainer {
-  id = -1;
+  cid: number = -1;
+  type = 'geometry';
   opt: GeometryOptionType | undefined;
   content: ContentType;
   tween: any;
@@ -189,7 +190,7 @@ export default class Geometry implements GeometryContainer {
           this.setPosition([position[index - 1].x, position[index - 1].y, position[index - 1].z]);
           this._ONMOVE_?.call(null, { finish: true });
           this.isMove = false;
-          console.log('finnish',this._ONMOVE_)
+          console.log('finnish', this._ONMOVE_);
           onEnded?.call(null);
         }
       };
@@ -198,7 +199,7 @@ export default class Geometry implements GeometryContainer {
   }
   initDrag(camera: ThreeConstruct.Camera, renderer: ThreeConstruct.Renderer) {
     this.dragControl = CreateThree.createDragControls(
-      [this.content.thing],
+      [this.content.group],
       camera,
       renderer.domElement
     );
@@ -231,11 +232,36 @@ export default class Geometry implements GeometryContainer {
   getSize() {
     return CreateThree.createBox3(this.content.thing);
   }
+  onKey(keyName: string, cb: Function) {
+    _keybus.$on('Key' + keyName, {
+      id: this.cid,
+      type: this.type,
+      fn: () => {
+        cb(this);
+      },
+    });
+    console.log(_keybus);
+  }
+  offKey(keyName: string) {
+    _keybus.$delete('Key' + keyName, {
+      id: this.cid,
+      type: this.type,
+    });
+  }
   scale(position: [number, number, number]): void {
     this.content.group.scale.set(...position);
   }
-  translate(...arg: any): void {
-    this.content.group.translate(...arg);
+  translateX(num: number): void {
+    this.content.group.translateX(num);
+    this.setPosition([this.position[0] + num, this.position[1], this.position[2]]);
+  }
+  translateY(num: number): void {
+    this.content.group.translateY(num);
+    this.setPosition([this.position[0], this.position[1] + num, this.position[2]]);
+  }
+  translateZ(num: number): void {
+    this.content.group.translateZ(num);
+    this.setPosition([this.position[0], this.position[1], this.position[2] + num]);
   }
   rotateX(deg: number): void {
     this.content.group.rotateX(deg);

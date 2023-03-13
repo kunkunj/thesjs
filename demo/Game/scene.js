@@ -229,21 +229,11 @@ const tip = Thes.createTip({
   showCancle: false,
   sureText: '开始',
   onSure() {
-    // console.log(tip.dispose());
     tip.dispose();
     th.lookAt(xw);
     th.flyTo({ x: 700, y: 200, z: 140, time: 1000 });
-    // setTimeout(() => {
-    //   th.moveAt(xw);
-    //   th.flyTo({ x: 365, y: 62, z: 159.95240000076592, time: 2525 });
-    //   xw.moveTo([
-    //     { x: 365, y: 32, z: 150, time: 1000, deg: Math.PI / 2 },
-    //     { x: 0, y: 32, z: 150, time: 10000, deg: -Math.PI / 2 },
-    //     { x: 0, y: 32, z: -100, time: 5000, deg: Math.PI / 2 },
-    //     { x: -350, y: 32, z: -100, time: 9000, deg: -Math.PI / 2 },
-    //   ]);
-    // }, 5000);
-    startChat();
+    // startChat();
+    initKey()
   },
   onCancle() {},
 });

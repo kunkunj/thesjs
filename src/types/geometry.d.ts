@@ -253,7 +253,7 @@ export type GeometryType = {
  * 几何体参数
  */
 export interface GeometryContainer {
-  id: number;
+  cid: number;
   content: ContentType;
   PARENT_THES: any;
   isDrag: boolean;

@@ -39,7 +39,7 @@ import { createGeofn, createMaFn } from './converter/geometry';
 import { PopupContainer, PopupType } from '../types/popup';
 import { Popup } from './popup';
 import { _CONSTANT_, _CONSTANT_BUS_, _Events } from '../common/constant';
-import { _bus } from '../common/bus';
+import { _bus, _keybus } from '../common/bus';
 import { Collecter, CollecterContainer } from '../common/collecter';
 import { animateHook, mouseDownHook, toastHook } from '../common/hooks';
 import { LoadTip, TipType } from '../common/tsx';
@@ -535,6 +535,11 @@ export class Thes implements ThesContainer {
       if (e.key == 'Control' && !this._IS_CTRL_FLAG) {
         this._SET_CTRL_EVENT(true);
         _bus.$emit('keyDowmControl', true);
+      }
+      console.log(_keybus)
+      if (_keybus.queues['Key' + e.key] && _keybus.queues['Key' + e.key].length) {
+        console.log(_keybus.queues['Key' + e.key])
+        _keybus.$emit('Key' + e.key)
       }
     };
     document.onkeyup = e => {
