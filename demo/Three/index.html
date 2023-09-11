@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>three</title>
+    <script src="../../dist/thes.min.js"></script>
+  </head>
+  <body>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script>
+      new Thes({
+        el: document.body,
+        view: 800,
+        camera: Thes.getDefaultCameraOptions,
+        width: window?.innerWidth || 1000,
+        height: window?.innerHeight || 1000,
+        lights: Thes.getDefaultLightOptions, 
+        ambientLight: {
+          color: 'rgb(255,255,255)',
+        },
+        background: 'rgb(120,187,255)',
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gemetry</title>
+    <script src="../../dist/thes.min.js"></script>
+  </head>
+  <body>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <div
+      style="position: absolute; top: 10px; cursor: pointer; border: 1px solid; left: 10px"
+      onclick="setcolor()"
+    >
+      换色
+    </div>
+    <div
+      style="position: absolute; top: 40px; cursor: pointer; border: 1px solid; left: 10px"
+      onclick="setposition()"
+    >
+      切换位置
+    </div>
+    <div
+      style="position: absolute; top: 70px; cursor: pointer; border: 1px solid; left: 10px"
+      onclick="moveto()"
+    >
+      移动位置
+    </div>
+    <script>
+      const th = new Thes({
+        el: document.body,
+        view: 800,
+        camera: Thes.getDefaultCameraOptions,
+        width: window?.innerWidth || 1000,
+        height: window?.innerHeight || 1000,
+        lights: Thes.getDefaultLightOptions,
+        ambientLight: {
+          color: 'rgb(255,255,255)',
+        },
+        background: 'rgb(120,187,255)',
+      });
+      const geo = Thes.createGeometry({
+        geometry: 'BoxGeometry',
+        material: 'MeshBasicMaterial',
+        BoxGeometryOption: {
+          width: 40,
+          height: 40,
+          depth: 40,
+        },
+        position: [0, 0, 0],
+        materialOption: {
+          color: 'rgb(255,0,0)',
+        },
+      });
+      let go1 = Thes.createGeometry({
+        geometry: 'BoxGeometry',
+        material: 'MeshBasicMaterial',
+        BoxGeometryOption: {
+          width: 40,
+          height: 40,
+          depth: 40,
+        },
+        position: [100, 0, 0],
+        materialOption: {
+          color: 'rgb(0,255,0)',
+        },
+      });
+      th.add(geo);
+      th.add(go1);
+      //设置颜色
+      function setcolor() {
+        geo.setColor(
+          `rgb(${Math.floor(Math.random() * 256)},${Math.floor(Math.random() * 256)},${Math.floor(
+            Math.random() * 256
+          )})`
+        );
+      }
+      //设置位置
+      function setposition() {
+        geo.setPosition([Math.random() * 200, Math.random() * 200, Math.random() * 200]);
+      }
+      //移动位置
+      function moveto() {
+        go1.moveTo(
+          { x: Math.random() * 200, y: Math.random() * 200, z: Math.random() * 200 },
+          1000
+        );
+      }
+        console.log(th);
+    </script>
+  </body>
+</html>
