@@ -2,31 +2,211 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>three</title>
-    <script src="../../dist/thes.min.js"></script>
-  </head>
-  <body>
+    <title>第一个three.js文件_WebGL三维场景</title>
     <style>
-      * {
+      body {
         margin: 0;
-        padding: 0;
+        overflow: hidden;
+        /* 隐藏body窗口区域滚动条 */
       }
     </style>
+    <!--引入three.js三维引擎-->
+    <script src="../../dist/thes.min.js"></script>
+  </head>
+
+  <body>
     <script>
-      new Thes({
+      const th = new Thes({
         el: document.body,
         view: 800,
-        camera: Thes.getDefaultCameraOptions,
-        width: window?.innerWidth || 1000,
-        height: window?.innerHeight || 1000,
-        lights: Thes.getDefaultLightOptions, 
-        ambientLight: {
-          color: 'rgb(255,255,255)',
+        sceneName: 'scene1',
+        camera: {
+          type: 'PerspectiveCamera',
+          position: {
+            x: 200,
+            y: 300,
+            z: 200,
+          },
+          PerspectiveCameraOption: {
+            fov: 45,
+            aspectRatio: window?.innerWidth / window?.innerHeight,
+            near: 1,
+            far: 1000,
+          },
         },
-        background: 'rgb(120,187,255)',
+        width: window?.innerWidth,
+        height: window?.innerHeight,
+        background: 'rgb(0,0,0)',
       });
+      // th.setGPScenter({
+      //   lon: 113.25151732418,
+      //   lat: 23.136776742416,
+      //   height: 10,
+      // });
+      let line = Thes.createCurve({
+        points: [
+          [-50, 6, 0],
+          [0, 6, 0],
+          [0, 6, 50],
+        ],
+        pointNum: 300,
+        linewidth: 100,
+        color: 'rgb(255,255,0)',
+        isBezier: false,
+      });
+      let line1 = Thes.createLine({
+        points: [
+          [0, 6, 50],
+          [0, 6, 170],
+        ],
+        linewidth: 100,
+        color: 'rgb(255,255,0)',
+      });
+      let line2 = Thes.createLine({
+        points: [
+          [-170, 6, 0],
+          [-50, 6, 0],
+        ],
+        linewidth: 4,
+        color: 'rgb(255,255,0)',
+      });
+      console.log(line1);
+      let div = document.createElement('div');
+      div.setAttribute(
+        'style',
+        'width:100px;height:100px;background:#f00;color:#fff;font-size:12px'
+      );
+      div.innerHTML = '哈哈哈哈，canvashtml';
+      Thes.creatHtml({
+        width: 10,
+        height: 10,
+        html: div,
+        material: 'basic',
+      }).then(res => {
+        res.setPosition([-50, 50, 0]);
+        // th.add(res);
+      });
+      let img = document.createElement('img');
+      img.src = '../assets/arrow.png';
+      Thes.creatHtml({
+        width: 10,
+        height: 10,
+        html: img,
+        material: 'basic',
+      }).then(res => {
+        res.rotateX(Math.PI / 2);
+        res.setPosition([0, 50, 0]);
+        res.setOpacity(1);
+        // th.add(res);
+      });
+      let sprite = Thes.createSprite({
+        url: '../assets/arrow.png',
+      });
+      sprite.rotateX(Math.PI / 2);
+      sprite.setPosition([0, 10, 0]);
+      sprite.scale([10, 10, 10]);
+      // th.add(sprite);
+      // line1.setTextureAnimation()
+      // line2.setTextureAnimation()
+      line.setOpacity(0);
+      line1.setOpacity(0);
+      line2.setOpacity(0);
+      th.add(line);
+      th.add(line1);
+      th.add(line2);
+      // line1.setTextureAnimation({
+      //   url: '../assets/ar1.png',
+      // })
+      // line2.setTextureAnimation({
+      //   url: '../assets/ar1.png',
+      // })
+      const geo = Thes.createGeometry({
+        geometry: 'box',
+        material: 'basic',
+        position: [0, 0, 0],
+        materialOption: {
+          color: 'rgb(255,0,0)',
+        },
+      });
+      th.openShadow();
+      geo.setPosition([10, 5, 0]);
+      const go2 = Thes.createBoxByShape({
+        material: 'lamber',
+        radius: 100,
+        path: [
+          { x: -200, y: -25 },
+          { x: 25, y: -25 },
+          { x: 25, y: 200 },
+          { x: -25, y: 200 },
+          { x: -25, y: 25 },
+          { x: -200, y: 25 },
+        ],
+        materialOption: {
+          color: 'rgb(131,128,123)',
+        },
+      });
+      let sada = Thes.createtTextureAnimation({
+        url: '../assets/ar1.png',
+        repeatX: 10,
+        speed: 1,
+      });
+      sada.setPosition([-100, 1, 0]);
+      sada.rotateX(Math.PI / 2);
+      // th.add(sada);
+      go2.rotateX(Math.PI / 2);
+      th.add(go2);
+      go2.closeShadow('castShadow');
+      const sadasda = Thes.createCurveByShape({
+        url: '../assets/ar1.png',
+        repeatX: 10,
+        repeatY: 0,
+        speed: 1,
+      });
+      const light = Thes.createSpotLight(
+        {
+          target: geo,
+          color: '#ff0',
+          position: [-20, 30, 0],
+          distance: 200,
+          intensity: 2,
+          helper:true,
+          angle: (Math.PI * 1) / 9,
+        },
+        th
+      );
+      th.add(light);
+      // geo.closeShadow('castShadow');
+      geo.moveOnLine([line2, line, line1], { 0: 4000, 2: 4000 }, e => {
+        // console.log(e)
+        light.setLightTargetPosition([e.x, e.y, e.z]);
+      });
+      // th.add(light)
+      // th.add(sadasda)
+      // th.setCenter({x:100,y:0,z:0})
+      // console.log(geo);
+      // geo.lookAt([113.25172832418, 10, 23.13176742416]);
+      // th.lookAt({
+      //   position: [113.25151732418, 10, 23.136776742416],
+      // });
+      // geo.moveTo([{ lon: 113.25172832418, lat: 23.136776742416, height: 10, time: 5000 },{ lon: 113.25172832418, lat: 23.136876742416, height: 10, time: 5000 }]);
+      th.add(geo);
+      // console.log(Thes.createGeometry)
+      // th.moveAt(geo, 50, 100, e => {
+      //   // console.log(e);
+      // });
+      // th.flyTo({ x: -50, y: 50, z: 0, time: 1671 });
+      // th.setHDRbackground({
+      //   url:'../assets/yoga_room_4k.hdr',
+      //   loading:true
+      // })
+      // th.setFPS()
+      // th.on('progress', num => {
+      //   console.log(num, '加载中');
+      // });
+      // th.on('loaded', () => {
+      //   console.log('加载完毕');
+      // });
+      console.log(th);
     </script>
   </body>
 </html>

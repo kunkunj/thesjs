@@ -32,67 +32,341 @@
     >
       移动位置
     </div>
+    <div
+      style="position: absolute; top: 100px; cursor: pointer; border: 1px solid; left: 10px"
+      onclick="dispose()"
+    >
+      销毁
+    </div>
+    <!-- <div
+      style="position: absolute; top: 130px; cursor: pointer; border: 1px solid; left: 10px"
+      onclick="createScene()"
+    >
+      新增场景
+    </div> -->
+    <div
+      style="position: absolute; top: 130px; cursor: pointer; border: 1px solid; left: 10px"
+      onclick="inBox()"
+    >
+      切换场景
+    </div>
+    <div
+      style="position: absolute; top: 160px; cursor: pointer; border: 1px solid; left: 10px"
+      onclick="changeP1()"
+    >
+      全局切换视角
+    </div>
+    <div
+      style="position: absolute; top: 190px; cursor: pointer; border: 1px solid; left: 10px"
+      onclick="changeP2()"
+    >
+      切换内部的视角
+    </div>
+    <div
+      style="position: absolute; top: 220px; cursor: pointer; border: 1px solid; left: 10px"
+      onclick="rotate()"
+    >
+      旋转
+    </div>
+    <div
+      id="popup"
+      style="width: 100px; height: 100px; background: #fff; border-radius: 10px; display: none"
+    >
+      弹窗
+    </div>
+    <div
+      id="popup2"
+      style="width: 100px; height: 100px; background: #fff; border-radius: 10px; display: none"
+    >
+      弹窗2
+    </div>
     <script>
       const th = new Thes({
         el: document.body,
         view: 800,
-        camera: Thes.getDefaultCameraOptions,
+        sceneName: 'scene1111',
+        camera: {
+          type: 'PerspectiveCamera',
+          position: {
+            x: 200,
+            y: 300,
+            z: 200,
+          },
+          PerspectiveCameraOption: {
+            fov: 45,
+            aspectRatio: window?.innerWidth / window?.innerHeight,
+            near: 1,
+            far: 1000,
+          },
+        },
         width: window?.innerWidth || 1000,
         height: window?.innerHeight || 1000,
-        lights: Thes.getDefaultLightOptions,
-        ambientLight: {
-          color: 'rgb(255,255,255)',
-        },
-        background: 'rgb(120,187,255)',
+        background: [
+          '../assets/px.jpg',
+          '../assets/nx.jpg',
+          '../assets/py.jpg',
+          '../assets/ny.jpg',
+          '../assets/pz.jpg',
+          '../assets/nz.jpg',
+        ],
       });
+
+      //单颜色正方体
       const geo = Thes.createGeometry({
-        geometry: 'BoxGeometry',
-        material: 'MeshBasicMaterial',
-        BoxGeometryOption: {
-          width: 40,
-          height: 40,
-          depth: 40,
-        },
+        geometry: 'box',
+        material: 'basic',
         position: [0, 0, 0],
         materialOption: {
-          color: 'rgb(255,0,0)',
+          map: '../assets/mb.jpg',
         },
       });
+      geo.isDrag = true;
+      //彩色正方体
       let go1 = Thes.createGeometry({
-        geometry: 'BoxGeometry',
-        material: 'MeshBasicMaterial',
-        BoxGeometryOption: {
-          width: 40,
-          height: 40,
-          depth: 40,
+        geometry: 'box',
+        material: 'basic',
+        position: [25, 0, 0],
+        materialOption: [
+          {
+            color: 'rgb(155,255,0)',
+          },
+          {
+            color: 'rgb(255,255,0)',
+          },
+          {
+            color: 'rgb(24,255,0)',
+          },
+          {
+            color: 'rgb(0,255,255)',
+          },
+          {
+            color: 'rgb(45,255,255)',
+          },
+          {
+            color: 'rgb(0,255,0)',
+          },
+        ],
+      });
+      //平面圆
+      const go2 = Thes.createGeometry({
+        geometry: 'circle',
+        material: 'basic',
+        position: [50, 0, 0],
+        materialOption: {
+          color: 'rgb(255,255,0)',
         },
-        position: [100, 0, 0],
+      });
+      //圆锥
+      const go3 = Thes.createGeometry({
+        geometry: 'cone',
+        material: 'basic',
+        position: [-25, 0, 0],
+        materialOption: [
+          {
+            color: 'rgb(255,255,0)',
+          },
+          {
+            color: 'rgb(255,0,0)',
+          },
+          {
+            color: 'rgb(255,0,255)',
+          },
+        ],
+      });
+      //圆柱
+      const go4 = Thes.createGeometry({
+        geometry: 'cylinder',
+        material: 'basic',
+        position: [-50, 0, 0],
+        materialOption: [
+          {
+            color: 'rgb(255,255,0)',
+          },
+          {
+            color: 'rgb(255,0,0)',
+          },
+          {
+            color: 'rgb(255,0,255)',
+          },
+        ],
+      });
+      //平面
+      const go5 = Thes.createGeometry({
+        geometry: 'plane',
+        material: 'basic',
+        position: [75, 0, 0],
+        materialOption: {
+          color: 'rgb(255,255,0)',
+        },
+      });
+      //球体
+      const go6 = Thes.createGeometry({
+        geometry: 'sphere',
+        material: 'basic',
         materialOption: {
           color: 'rgb(0,255,0)',
         },
+        position: [-75, 0, 0],
       });
+      const geo1 = Thes.createText({
+        content: '按住ctrl键，就可以拖动箱子啦',
+        style: {
+          font: '../fonts/STXinwei_Regular.json',
+          size: 12,
+          height: 1,
+        },
+        material: 'basic',
+        position: [0, 50, 0],
+        materialOption: {
+          color: 'rgb(0,0,0)',
+        },
+      }).then(res => {
+        console.log(res);
+        res.setColor('rgb(255,0,0)');
+        th.add(res, 1);
+      });
+      const line = Thes.createLine({
+        // isCover:true,
+        points: [
+          [0, 40, 0],
+          [-40, 40, 0],
+          [-40, 80, 0],
+        ],
+        color: 'rgb(255,0,0)',
+      });
+      th.add(line);
       th.add(geo);
       th.add(go1);
+      th.add(go2);
+      th.add(go3);
+      th.add(go4);
+      th.add(go5);
+      th.add(go6);
       //设置颜色
       function setcolor() {
-        geo.setColor(
-          `rgb(${Math.floor(Math.random() * 256)},${Math.floor(Math.random() * 256)},${Math.floor(
-            Math.random() * 256
-          )})`
-        );
+        geo.setColor(getColor(1)[0]);
+        go1.setColor(getColor(6));
+        go2.setColor(getColor(1)[0]);
+        go3.setColor(getColor(3));
+        go4.setColor(getColor(3));
+        go5.setColor(getColor(1)[0]);
+        go6.setColor(getColor(1)[0]);
+        line.setColor(getColor(1)[0]);
       }
       //设置位置
       function setposition() {
-        geo.setPosition([Math.random() * 200, Math.random() * 200, Math.random() * 200]);
+        geo.setPosition([Math.random() * 200, 0, Math.random() * 200]);
+        go1.setPosition([Math.random() * 200, 0, Math.random() * 200]);
+        go2.setPosition([Math.random() * 200, 0, Math.random() * 200]);
+        go3.setPosition([Math.random() * 200, 0, Math.random() * 200]);
+        go4.setPosition([Math.random() * 200, 0, Math.random() * 200]);
+        go5.setPosition([Math.random() * 200, 0, Math.random() * 200]);
+        go6.setPosition([Math.random() * 200, 0, Math.random() * 200]);
+        line.setPosition([Math.random() * 200, 0, Math.random() * 200]);
       }
       //移动位置
       function moveto() {
-        go1.moveTo(
-          { x: Math.random() * 200, y: Math.random() * 200, z: Math.random() * 200 },
-          1000
-        );
+        geo.moveTo({ x: Math.random() * 200, y: 0, z: Math.random() * 200, time: 1000 });
+        go1.moveTo({ x: Math.random() * 200, y: 0, z: Math.random() * 200, time: 1000 });
+        go2.moveTo({ x: Math.random() * 200, y: 0, z: Math.random() * 200, time: 1000 });
+        go3.moveTo({ x: Math.random() * 200, y: 0, z: Math.random() * 200, time: 1000 });
+        go4.moveTo({ x: Math.random() * 200, y: 0, z: Math.random() * 200, time: 1000 });
+        go5.moveTo({ x: Math.random() * 200, y: 0, z: Math.random() * 200, time: 1000 });
+        go6.moveTo({ x: Math.random() * 200, y: 0, z: Math.random() * 200, time: 1000 });
+        line.moveTo({ x: Math.random() * 200, y: 0, z: Math.random() * 200, time: 1000 });
       }
-        console.log(th);
+      function rotate() {
+        geo.rotateYTo(Math.PI);
+        go1.rotateXTo(Math.PI);
+        go4.rotateZTo(Math.PI);
+      }
+      function getColor(num) {
+        return new Array(num)
+          .fill(null)
+          .map(
+            item =>
+              `rgb(${Math.floor(Math.random() * 256)},${Math.floor(
+                Math.random() * 256
+              )},${Math.floor(Math.random() * 256)})`
+          );
+      }
+      function dispose() {
+        geo.delete();
+        go1.delete();
+        go2.delete();
+        go3.delete();
+        go4.delete();
+        go5.delete();
+        go6.delete();
+        line.delete();
+      }
+      const scene = th.createScene({
+        el: document.body,
+        view: 800,
+        camera: {
+          type: 'PerspectiveCamera',
+          position: {
+            x: 200,
+            y: 300,
+            z: 200,
+          },
+          PerspectiveCameraOption: {
+            fov: 45,
+            aspectRatio: window?.innerWidth / window?.innerHeight,
+            near: 1,
+            far: 1000,
+          },
+        },
+        width: window?.innerWidth || 1000,
+        height: window?.innerHeight || 1000,
+        background: [
+          '../assets/mb.jpg',
+          '../assets/mb.jpg',
+          '../assets/mb.jpg',
+          '../assets/mb.jpg',
+          '../assets/mb.jpg',
+          '../assets/mb.jpg',
+        ],
+      });
+      const popup = Thes.createPopup({
+        content: document.getElementById('popup'),
+        position: [50, 100, 0],
+      });
+      popup.addTo(th);
+      const popup2 = Thes.createPopup({
+        content: document.getElementById('popup2'),
+        position: [0, 0, 0],
+      });
+      popup2.addTo(scene);
+      function inBox() {
+        //创建盒子场景
+        //使用盒子场景
+        if (th.sceneBox.cid == 2) {
+          th.useScene(th.scenes[0]);
+        } else {
+          th.useScene(th.scenes[1]);
+        }
+        console.log(th, scene);
+      }
+      function changeP1() {
+        th.setCenter({
+          x: 50,
+          y: 50,
+          z: 50,
+        });
+      }
+      function changeP2() {
+        scene.setCenter({
+          x: 50,
+          y: 50,
+          z: 50,
+        });
+      }
+      th.on('click', list => {
+        console.log(list);
+      });
+      th._MOUSE_MOVE_(th.scenes[0].modelBox);
+      console.log(th, go1);
     </script>
   </body>
 </html>

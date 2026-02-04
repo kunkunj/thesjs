@@ -1,5 +1,6 @@
 import { defaultCamera, defaultLight, defaultAmbient } from '../../data/option';
-export default function (th: any) {
+import { Thes } from '../thes';
+export default function (th: Record<keyof any, any>) {
   th.getDefaultCameraOptions = defaultCamera;
   th.getDefaultLightOptions = defaultLight;
   th.getDefaultAmbientOptions = defaultAmbient;

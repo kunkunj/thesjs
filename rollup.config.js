@@ -21,7 +21,6 @@ function run() {
     })
   );
 }
-console.log(process.env.ENV)
 export default {
   input: './src/index.ts',
   output: [

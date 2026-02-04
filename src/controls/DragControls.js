@@ -103,7 +103,7 @@ class DragControls extends EventDispatcher {
 
 				if ( _intersections.length > 0 ) {
 
-					const object = _intersections[ 0 ].object;
+					const object = _intersections[ 0 ].object.parent;
 
 					_plane.setFromNormalAndCoplanarPoint( _camera.getWorldDirection( _plane.normal ), _worldPosition.setFromMatrixPosition( object.matrixWorld ) );
 
@@ -155,7 +155,7 @@ class DragControls extends EventDispatcher {
 
 			if ( _intersections.length > 0 ) {
 
-				_selected = ( scope.transformGroup === true ) ? _objects[ 0 ] : _intersections[ 0 ].object;
+				_selected = ( scope.transformGroup === true ) ? _objects[ 0 ] : _intersections[ 0 ].object.parent;
 
 				_plane.setFromNormalAndCoplanarPoint( _camera.getWorldDirection( _plane.normal ), _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );
 

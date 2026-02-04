@@ -1,4 +1,5 @@
-import { idMapType } from '../types/idType';
+import { idMapType } from '../../types/idType';
+type StorageType<T> = new () => T;
 /**
  * id存储库
  */
@@ -20,13 +21,13 @@ class storage implements idMapType {
 }
 
 //单例模式
-const idStorage: any = (function () {
-  let instance: any;
-  return function () {
+const idStorage: StorageType<idMapType> = (function () {
+  let instance: idMapType;
+  return function (): idMapType {
     if (!instance) {
       instance = new storage();
     }
     return instance;
   };
-})();
+})() as any;
 export default new idStorage();

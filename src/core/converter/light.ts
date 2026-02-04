@@ -1,45 +1,48 @@
-import { PointType } from '../../types/options';
+import { PointType } from '../../../types/options';
 import CreateThree from '../../common/three';
-/// <reference path="./threeType/ThreeConstruct.d.ts" />
+import { _CONSTANT_CAMERA_, _CONSTANT_LIGHT_ } from '../../common/constant';
 
-export default (lig: PointType, scene: ThreeConstruct.Scene): ThreeConstruct.Camera => {
+export default (lig: PointType, scene?: ThreeConstruct.Scene): ThreeConstruct.Camera => {
+  if (!lig) {
+    return {};
+  }
   let light: ThreeConstruct.Light;
   //光源类型
   switch (lig.type) {
-    case 'PointLight':
+    case _CONSTANT_LIGHT_.PointLight:
       light = CreateThree.createPointLight(
-        lig?.PointLightOption?.color ? lig?.PointLightOption.color : 'rgb(255,255,255)',
-        lig?.PointLightOption?.intensity || 1,
-        lig?.PointLightOption?.distance || 0,
-        lig?.PointLightOption?.decay || 2
+        lig?.LightOption?.color ? lig?.LightOption.color : 'rgb(255,255,255)',
+        lig?.LightOption?.intensity || 1,
+        lig?.LightOption?.distance || 0,
+        lig?.LightOption?.decay || 2
       );
       break;
-    case 'RectAreaLight':
+    case _CONSTANT_LIGHT_.RectAreaLight:
       light = CreateThree.createRectAreaLight(
-        lig?.RectAreaLightOption
-          ? CreateThree.createColor(lig?.RectAreaLightOption.color as string)
+        lig?.LightOption
+          ? CreateThree.createColor(lig?.LightOption.color as string)
           : CreateThree.createColor('rgb(255,255,255)'),
-        lig?.RectAreaLightOption?.intensity || 1,
-        lig?.RectAreaLightOption?.width || 10,
-        lig?.RectAreaLightOption?.height || 10
+        lig?.LightOption?.intensity || 1,
+        lig?.LightOption?.width || 10,
+        lig?.LightOption?.height || 10
       );
       break;
-    case 'SpotLight':
+    case _CONSTANT_LIGHT_.SpotLight:
       light = CreateThree.createRectAreaLight(
-        lig?.SpotLightOption
-          ? CreateThree.createColor(lig?.SpotLightOption.color as string)
+        lig?.LightOption
+          ? CreateThree.createColor(lig?.LightOption.color as string)
           : CreateThree.createColor('rgb(255,255,255)'),
-        lig?.SpotLightOption?.intensity || 1,
-        lig?.SpotLightOption?.distance,
-        lig?.SpotLightOption?.angle || 0,
-        lig?.SpotLightOption?.penumbra || 0,
-        lig?.SpotLightOption?.decay || 0
+        lig?.LightOption?.intensity || 1,
+        lig?.LightOption?.distance,
+        lig?.LightOption?.angle || 0,
+        lig?.LightOption?.penumbra || 0,
+        lig?.LightOption?.decay || 0
       );
       break;
   }
   //光源位置
   light.position.set(lig.position.x, lig.position.y, lig.position.z);
   //   camera.lookAt(scene.position);
-  scene.add(light);
+  scene?.add(light);
   return light;
 };

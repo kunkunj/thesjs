@@ -1,12 +1,19 @@
-/// <reference path="./threeType/ThreeConstruct.d.ts" />
 /**---------------------------------相机相关--------------------------------------- */
+
+import { _CONSTANT_, _CONSTANT_CAMERA_, _CONSTANT_LIGHT_ } from '../common/constant';
+import { GeometryContainer } from './geometry';
+
 /**
  * 立方相机（CubeCamera）
  * 正交相机（OrthographicCamera）
  * 透视相机（PerspectiveCamera）
  * 立体相机（StereoCamera）
  */
-export type Cameras = 'CubeCamera' | 'OrthographicCamera' | 'PerspectiveCamera' | 'StereoCamera';
+export type Cameras =
+  | _CONSTANT_CAMERA_.CubeCamera
+  | _CONSTANT_CAMERA_.OrthographicCamera
+  | _CONSTANT_CAMERA_.PerspectiveCamera
+  | 'StereoCamera';
 
 export type PerspectiveCameraType = {
   fov: number; //视野角度
@@ -34,7 +41,7 @@ export type OrthographicCameraType = {
 export type CubeCameraType = {
   near: Number;
   far: Number;
-  renderTarget: any;
+  renderTarget: Record<keyof any, any>;
 };
 /**
  * 相机参数
@@ -64,10 +71,15 @@ export type CameraType = {
  * decay - 沿着光照距离的衰退量。默认值 2。
  */
 export type PointLightType = {
+  target?: number[] & GeometryContainer;
   color?: ThreeConstruct.Color;
   intensity?: number;
   distance?: number;
   decay?: number;
+  isLight?: boolean;
+  penumbra?: number;
+  angle?: number;
+  position: [number, number, number];
 };
 /**
  * color -- 十六进制光照颜色
@@ -103,7 +115,10 @@ export type SpotLightType = {
  * 平面光光源（RectAreaLight）
  * 聚光灯（SpotLight）
  */
-export type Lights = 'PointLight' | 'RectAreaLight' | 'SpotLight';
+export type Lights =
+  | _CONSTANT_LIGHT_.PointLight
+  | _CONSTANT_LIGHT_.RectAreaLight
+  | _CONSTANT_LIGHT_.SpotLight;
 /**
  * 光源参数
  * type -- 光源类型
@@ -116,9 +131,7 @@ export type PointType = {
     y: number;
     z: number;
   };
-  PointLightOption?: PointLightType;
-  RectAreaLightOption?: RectAreaLightType;
-  SpotLightOption?: SpotLightType;
+  LightOption?: PointLightType & RectAreaLightType & SpotLightType;
 };
 /**
  * 环境光
@@ -133,6 +146,7 @@ export type AmbientType = {
 /**
  * el -- 节点
  * view -- 视野宽广，越大视野越广，默认200
+ * sceneName -- 场景名称
  * camera -- 相机参数详见相机相关
  * width -- 宽
  * height -- 高
@@ -145,13 +159,16 @@ export type AmbientType = {
  * ambientLight -- 环境光
  */
 export type optionsType = {
-  el: Element;
-  view:number,
-  camera: CameraType;
-  width: number;
-  height: number;
+  el: HTMLElement;
+  loading?: boolean;
+  loadType?: _CONSTANT_.WATCHBYTE | _CONSTANT_.WATCHCOUNT;
+  camera?: CameraType;
+  width?: number;
+  height?: number;
+  view?: number;
+  sceneName?: string;
   lights?: PointType;
-  ambientLight: AmbientType;
+  ambientLight?: AmbientType;
   background?: ThreeConstruct.Color | ThreeConstruct.CubeTexture | ThreeConstruct.Texture;
   backgroundBlurriness?: number;
   environment?: null | ThreeConstruct.Texture;

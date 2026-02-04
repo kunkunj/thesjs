@@ -1,21 +1,19 @@
 import CreateThree from '../../common/three';
 import Tween from '@tweenjs/tween.js';
-/// <reference path="./threeType/ThreeConstruct.d.ts" />
+import { _UPDATE_HOOK_ } from '../thes';
 export default (
   el: Element,
-  width: number,
-  height: number,
+  width: number | undefined,
+  height: number | undefined,
   scene: ThreeConstruct.Scene,
   camera: ThreeConstruct.Camera
 ): ThreeConstruct.Renderer => {
-  const renderer: ThreeConstruct.Renderer = CreateThree.createRenderer();
+  const renderer: ThreeConstruct.Renderer = CreateThree.createRenderer({
+    antialias: true,
+  });
   renderer.setSize(width, height);
+  renderer.setPixelRatio(window?.devicePixelRatio);
   el.appendChild(renderer.domElement);
-  function render() {
-    Tween.update();
-    renderer.render(scene, camera);
-    requestAnimationFrame(render);
-  }
-  render();
+
   return renderer;
 };

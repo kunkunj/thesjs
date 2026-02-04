@@ -1,5 +1,4 @@
 import CreateThree from '../../common/three';
-/// <reference path="./threeType/ThreeConstruct.d.ts" />
 export default (
   camera: ThreeConstruct.Camera,
   renderer: ThreeConstruct.Renderer
@@ -8,5 +7,9 @@ export default (
     camera,
     renderer.domElement
   );
+  controls.enableRotate = true;
+  controls.rotateSpeed = 0.5;
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.1;
   return controls;
 };
